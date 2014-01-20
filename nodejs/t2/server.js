@@ -1,13 +1,17 @@
 
-function start() {
-    var http = require("http");
-    var util = require("./util");
+var http = require("http");
+var url = require("url");
+var util = require("./util");
+
+function start(route, handle) {
     var listenPort = 8888;
     function onRequest(request, response){
-        console.log("Request received.");
+        var pathname = url.parse(request.url).pathname;
+        console.log("Request for %s received.", pathname);
+        var content = route(handle, pathname);
         //console.log(util.toString(request));
         response.writeHead(200, {"Content-Type":"text/plain"});
-        response.write("Hello World");
+        response.write(content);
         response.end();
     }
 
