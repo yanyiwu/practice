@@ -1,7 +1,6 @@
 #include <node.h>
 #include <v8.h>
-#include <string>
-#include "include/MixSegment.hpp"
+#include "CppJieba/MixSegment.hpp"
 
 using namespace v8;
 
@@ -14,8 +13,8 @@ Handle<Value> Method(const Arguments& args) {
 
 Handle<Value> cut(const Arguments& agrs) {
     HandleScope scope;
-    std::string s("世界你好");
-    std::vector<std::string> res;
+    CppJieba::string s("世界你好");
+    CppJieba::vector<CppJieba::string> res;
     //CppJieba::MixSegment segment("/home/wyy/Code/cppjieba/dict/jieba.dict.utf8", "/home/wyy/Code/cppjieba/dict/hmm_model.utf8");
     segment.cut(s, res);
     s << res;
