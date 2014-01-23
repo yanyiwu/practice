@@ -2,7 +2,10 @@
   "targets": [
     {
       "target_name": "hello",
-      "sources": [ "hello.cpp" ]
+      "sources": [ "hello.cpp" ],
+      "cflags": [
+          "-std=c++0x", "-fexceptions"
+          ]
     }
   ]
 }
