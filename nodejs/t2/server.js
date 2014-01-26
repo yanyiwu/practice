@@ -3,8 +3,7 @@ var http = require("http");
 var url = require("url");
 var util = require("./util");
 
-function start(route, handle) {
-    var listenPort = 8888;
+function start(route, handle, listenPort) {
     function onRequest(request, response){
         var pathname = url.parse(request.url).pathname;
         console.log("Request for %s received.", pathname);
