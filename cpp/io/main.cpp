@@ -11,6 +11,10 @@ struct Data
     uint16_t count;
     char sentence[FEAT_SENTENCE_SIZE];
 };
+ostream & operator << (ostream & os, const Data& data)
+{
+    return os << data.word << data.count << data.sentence;
+}
 const char * DATA_FILE = "data";
 void write()
 {
@@ -25,9 +29,15 @@ void write()
 }
 void read()
 {
+    Data data;
+    FILE * file = fopen(DATA_FILE, "r");
+    fread(&data, sizeof(data), 1, file);
+    cout<< data << endl;
+    fclose(file);
 }
 int main()
 {
     write();
+    read();
     return 0;
 }
