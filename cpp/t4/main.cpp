@@ -1,15 +1,10 @@
 #include <iostream>
-#define NDEBUG
-#include <cassert>
-
+#include <bitset>
 using namespace std;
-bool funct(bool in)
-{
-    cout<< in << endl;
-    return in;
-}
+
 int main()
 {
-    assert(funct(false));
+    int staff_size = 27;
+    double salaries[staff_size];
     return 0;
 }
