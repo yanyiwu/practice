@@ -14,7 +14,7 @@
 #define CLEAN(x) (memset(x, 0, sizeof(x)))
 using namespace std;
 const int inf = 0x7fffffff;
-const int N=55,M=2505;
+const int N=105,M=40005;
 
 struct Edge
 {
