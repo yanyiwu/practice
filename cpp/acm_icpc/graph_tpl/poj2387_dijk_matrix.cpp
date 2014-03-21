@@ -16,35 +16,13 @@ using namespace std;
 const int inf = 0x7fffffff;
 const int N=1005, M=4005;
 
+int mat[N][N];
+
 int s, t;
 int dis[N];
 bool visit[N];
 int n, m;
 
-
-struct Edge
-{
-    int v, w, next;
-}edge[M];
-int edgehead[N];
-int edgen;
-void addedge(int u, int v, int w)
-{
-    edge[edgen].v = v;
-    edge[edgen].w = w;
-    edge[edgen].next = edgehead[u];
-    edgehead[u] = edgen;
-    edgen++;
-}
-
-void init()
-{
-    edgen = 1;
-    CLEAN(edge);
-    CLEAN(edgehead);
-    CLEAN(dis);
-    CLEAN(visit);
-}
 
 int dijkstra()
 {
@@ -56,29 +34,35 @@ int dijkstra()
     int now = s;
     dis[now] = 0;
     visit[now] = true;
-    while(!visit[t])
+    for(int i = 0;  i < n; i++)
     {
         int mn = inf;
         int min_v = 0;
-        for(int j = edgehead[now]; j; j = edge[j].next)
+        for(int j = 1; j <= n; j++)
         {
-            int v = edge[j].v;
-            int w = edge[j].w;
-            if(!visit[v])
+            if(!visit[j])
             {
-                if(dis[v] > dis[now] + w)
+                if(mat[now][j] != inf && dis[j] > dis[now] + mat[now][j])
                 {
-                    dis[v] = dis[now] + w;
+                    dis[j] = dis[now] + mat[now][j];
                 }
-                if(dis[v] < mn)
+                if(dis[j] < mn)
                 {
-                    mn = dis[v];
-                    min_v = v;
+                    mn = dis[j];
+                    min_v = j;
                 }
             }
         }
+        if(mn == inf)
+        {
+            break;
+        }
         now = min_v;
         visit[now] = true;
+        if(now == t)
+        {
+            break;
+        }
     }
     return dis[t];
 }
@@ -92,13 +76,19 @@ int main()
 {
     freopen("data/poj2387.in", "r", stdin);
     scanf("%d%d",&m,&n);
-    init();
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = 1; j <= n; j++)
+        {
+            mat[i][j] = inf;
+        }
+    }
     int u, v, w;
     for(int i = 0; i < m; i++)
     {
         scanf("%d%d%d",&u,&v,&w);
-        addedge(u, v, w);
-        addedge(v, u, w);
+        mat[u][v] = Min(mat[u][v], w);
+        mat[v][u] = mat[u][v];
     }
     s = 1;
     t = n;

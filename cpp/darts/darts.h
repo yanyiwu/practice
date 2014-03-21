@@ -488,28 +488,30 @@ namespace Darts {
     }
 
   };
+//typedef Darts::DoubleArrayImpl<char, unsigned char, int, unsigned int> DoubleArray;
+typedef Darts::DoubleArrayImpl<int16_t, uint16_t, int, unsigned int> DoubleArray;
 
-#if 4 == 2
-  typedef Darts::DoubleArrayImpl<char, unsigned char, short,
-                                 unsigned short> DoubleArray;
-#define DARTS_ARRAY_SIZE_IS_DEFINED 1
-#endif
-
-#if 4 == 4 && !defined(DARTS_ARRAY_SIZE_IS_DEFINED)
-  typedef Darts::DoubleArrayImpl<char, unsigned char, int,
-                                 unsigned int> DoubleArray;
-#define DARTS_ARRAY_SIZE_IS_DEFINED 1
-#endif
-
-#if 4 == 4 && !defined(DARTS_ARRAY_SIZE_IS_DEFINED)
-  typedef Darts::DoubleArrayImpl<char, unsigned char, long,
-                                 unsigned long> DoubleArray;
-#define DARTS_ARRAY_SIZE_IS_DEFINED 1
-#endif
-
-#if 4 == 8 && !defined(DARTS_ARRAY_SIZE_IS_DEFINED)
-  typedef Darts::DoubleArrayImpl<char, unsigned char, long long,
-                                 unsigned long long> DoubleArray;
-#endif
+//#if 4 == 2
+//  typedef Darts::DoubleArrayImpl<char, unsigned char, short,
+//                                 unsigned short> DoubleArray;
+//#define DARTS_ARRAY_SIZE_IS_DEFINED 1
+//#endif
+//
+//#if 4 == 4 && !defined(DARTS_ARRAY_SIZE_IS_DEFINED)
+//  typedef Darts::DoubleArrayImpl<char, unsigned char, int,
+//                                 unsigned int> DoubleArray;
+//#define DARTS_ARRAY_SIZE_IS_DEFINED 1
+//#endif
+//
+//#if 4 == 4 && !defined(DARTS_ARRAY_SIZE_IS_DEFINED)
+//  typedef Darts::DoubleArrayImpl<char, unsigned char, long,
+//                                 unsigned long> DoubleArray;
+//#define DARTS_ARRAY_SIZE_IS_DEFINED 1
+//#endif
+//
+//#if 4 == 8 && !defined(DARTS_ARRAY_SIZE_IS_DEFINED)
+//  typedef Darts::DoubleArrayImpl<char, unsigned char, long long,
+//                                 unsigned long long> DoubleArray;
+//#endif
 }
 #endif
