@@ -7,9 +7,9 @@
 #include<cmath>
 #include<algorithm>
 #include<queue>
-#define Min(a,b) (a<b?a:b)
-#define Max(a,b) (a>b?a:b)
-#define Abs(a) (a>0?(a):-(a))
+#define Min(a,b) ((a)<(b)?(a):(b))
+#define Max(a,b) ((a)>(b)?(a):(b))
+#define Abs(a) ((a)>0?(a):-(a))
 #define llong long long int
 #define CLEAN(x) (memset(x, 0, sizeof(x)))
 using namespace std;
@@ -90,7 +90,9 @@ void solve()
 
 int main()
 {
+#ifdef WYY_DEBUG
     freopen("data/poj2387.in", "r", stdin);
+#endif
     scanf("%d%d",&m,&n);
     init();
     int u, v, w;
