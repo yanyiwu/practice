@@ -14,7 +14,7 @@
 #define CLEAN(x) (memset(x, 0, sizeof(x)))
 using namespace std;
 const int inf = 0x7fffffff;
-const int N=1005, M=4005;
+const int N=1005, M=40005;
 
 int s, t;
 int dis[N];
@@ -37,14 +37,6 @@ void addedge(int u, int v, int w)
     edgen++;
 }
 
-void init()
-{
-    edgen = 1;
-    CLEAN(edge);
-    CLEAN(edgehead);
-    CLEAN(dis);
-    CLEAN(visit);
-}
 
 int dijkstra()
 {
@@ -94,7 +86,7 @@ int main()
     freopen("data/poj2387.in", "r", stdin);
 #endif
     scanf("%d%d",&m,&n);
-    init();
+    edgen = 1;
     int u, v, w;
     for(int i = 0; i < m; i++)
     {

@@ -34,7 +34,7 @@ int dijkstra()
     int now = s;
     dis[now] = 0;
     visit[now] = true;
-    for(int i = 0;  i < n; i++)
+    while(!visit[t])
     {
         int mn = inf;
         int min_v = 0;
@@ -53,16 +53,18 @@ int dijkstra()
                 }
             }
         }
-        if(mn == inf)
-        {
-            break;
-        }
+        //if(mn == inf)
+        //{
+        //    break;
+        //}
+        //now = min_v;
+        //visit[now] = true;
+        //if(now == t)
+        //{
+        //    break;
+        //}
         now = min_v;
         visit[now] = true;
-        if(now == t)
-        {
-            break;
-        }
     }
     return dis[t];
 }
@@ -74,7 +76,9 @@ void solve()
 
 int main()
 {
+#ifdef WYY_DEBUG
     freopen("data/poj2387.in", "r", stdin);
+#endif
     scanf("%d%d",&m,&n);
     for(int i = 1; i <= n; i++)
     {
