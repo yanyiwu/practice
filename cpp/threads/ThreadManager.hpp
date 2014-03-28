@@ -15,7 +15,7 @@ namespace Husky
             typedef pthread_t HANDLE;
             typedef void *(* PThreadFunc)(void* param);
         public:
-            ThreadManager(){;}
+            ThreadManager(){}
             ~ThreadManager(){}
 
             size_t HandleCount(){return _handles.size();}
