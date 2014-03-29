@@ -59,26 +59,27 @@ bool bfs()
 {
     CLEAN(visit);
     CLEAN(level);
-    int head = 1, tail = 1;
-    que[tail ++] = source;
+    queue<int> que;
+    que.push(source);
     visit[source] = true;
-    level[source] = 0;
-    while(head < tail)
+    level[source] = 1;
+    while(!que.empty())
     {
-        int now = que[head++];
+        int now = que.front();
+        que.pop();
         if(now == sink)
         {
             return true;
         }
-        for(int i = edgehead[now]; i; i = edge[i].next)
+        for(int i = edgehead[now]; i ; i = edge[i].next)
         {
             int v = edge[i].v;
-            if(!visit[v] && edge[i].w > 0)
+            int w = edge[i].w;
+            if(w && !visit[v])
             {
-                que[tail++] = v;
+                level[v] = level[now] +1;
+                que.push(v);
                 visit[v] = true;
-                level[v] = level[now] + 1;
-
             }
         }
     }
@@ -92,15 +93,16 @@ int dinic(int now, int sum)
         return sum;
     }
     int os = sum;
-    for(int i = edgehead[now]; i; i = edge[i].next)
+    for(int i = edgehead[now]; i ; i = edge[i].next)
     {
         int v = edge[i].v;
-        if(level[v] == level[now] + 1 && edge[i].w > 0)
+        int w = edge[i].w;
+        if(w && level[now] + 1== level[v])
         {
-            int ret = dinic(v, Min(sum, edge[i].w));
+            int ret = dinic(v, Min(w, sum));
+            sum -= ret;
             edge[i].w -= ret;
             edge[edge[i].re].w += ret;
-            sum -= ret;
         }
     }
     return os - sum;
@@ -108,10 +110,10 @@ int dinic(int now, int sum)
 
 void solve()
 {
-    int sum = 0;
+    int sum =0;
     while(bfs())
     {
-        sum += dinic(source, inf);
+        sum+= dinic(source, inf);
     }
     printf("%d\n", sum);
 }
@@ -119,7 +121,9 @@ void solve()
 int main()
 {
     
+#ifdef WYY_DEBUG
     freopen("data/poj1459.in", "r", stdin);
+#endif
     int n, s_n, t_n , k, tmp;
     while(scanf("%d%d%d%d", &n, &s_n, &t_n, &k)!=EOF)
     {
