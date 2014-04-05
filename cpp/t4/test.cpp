@@ -21,7 +21,7 @@ void funct1()
         item.size = i;
         item.point = i * 100.0;
         vec.push_back(item);
-        mp[item.size] = & vec.back();
+        mp[item.size] = & vec.back(); // notice here
     }
 
     // 此处会有coredump
@@ -50,7 +50,6 @@ void funct2()
         mp[vec[i].size] = &vec[i];
     }
 
-    // 此处会有coredump
     for(size_t i = 0; i < count; i++)
     {
         cout<< mp[i]->size << endl;
