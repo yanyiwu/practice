@@ -12,6 +12,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdio>
+#include <stdint.h>
 
 #ifdef HAVE_ZLIB_H
 namespace zlib {
@@ -488,8 +489,8 @@ namespace Darts {
     }
 
   };
-//typedef Darts::DoubleArrayImpl<char, unsigned char, int, unsigned int> DoubleArray;
-typedef Darts::DoubleArrayImpl<int16_t, uint16_t, int, unsigned int> DoubleArray;
+typedef Darts::DoubleArrayImpl<char, unsigned char, int, unsigned int> DoubleArray;
+//typedef Darts::DoubleArrayImpl<int16_t, uint16_t, int, unsigned int> DoubleArray;
 
 //#if 4 == 2
 //  typedef Darts::DoubleArrayImpl<char, unsigned char, short,
