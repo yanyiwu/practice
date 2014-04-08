@@ -45,6 +45,7 @@ void funct2()
         vec.push_back(item);
     }
 
+    //等到vec初始化完毕了，再遍历一遍建mp。
     for(size_t i = 0 ; i < count; i++)
     {
         mp[vec[i].size] = &vec[i];
