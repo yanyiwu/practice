@@ -67,9 +67,12 @@ int main(int argc, char **argv) {
   }
   if (file != "-") delete is;
 
-  if (da.build(key.size(), &key[0], 0, 0, &progress_bar) != 0
-      || da.save(index.c_str()) != 0) {
+  if (da.build(key.size(), &key[0], 0, 0, &progress_bar) != 0){
     std::cerr << "Error: cannot build double array  " << file << std::endl;
+    return -1;
+  }
+  if(da.save(index.c_str()) != 0) {
+    std::cerr << "Error: cannot save double array  " << file << std::endl;
     return -1;
   };
 

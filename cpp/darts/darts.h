@@ -13,6 +13,8 @@
 #include <cstring>
 #include <cstdio>
 #include <stdint.h>
+#include "Limonp/str_functs.hpp"
+using namespace Limonp;
 
 #ifdef HAVE_ZLIB_H
 namespace zlib {
@@ -110,7 +112,10 @@ namespace Darts {
               const size_t     *length = 0,
               const value_type *value = 0,
               int (*progress_func)(size_t, size_t) = 0) {
-      if (!key_size || !key) return 0;
+      if (!key_size || !key)
+      {
+          return 0;
+      }
 
       progress_func_ = progress_func;
       key_           = key;
@@ -376,15 +381,22 @@ namespace Darts {
       array_u_type_ prev = 0;
 
       for (size_t i = parent.left; i < parent.right; ++i) {
+          
         if ((length_ ? length_[i] : length_func_()(key_[i])) < parent.depth)
+        {
           continue;
+        }
+
 
         const node_u_type_ *tmp = reinterpret_cast<const node_u_type_ *>(key_[i]);
 
         array_u_type_ cur = 0;
         if ((length_ ? length_[i] : length_func_()(key_[i])) != parent.depth)
+        {
           cur = (array_u_type_)tmp[parent.depth] + 1;
+        }
 
+        
         if (prev > cur) {
           error_ = -3;
           return 0;
