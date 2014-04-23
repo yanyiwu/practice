@@ -136,7 +136,9 @@ namespace Darts {
 
       std::vector<node_t> siblings;
       fetch(root_node, siblings);
+      print(__LINE__);
       insert(siblings);
+      print(__LINE__);
 
       size_ += (1 << 8 * sizeof(key_type)) + 1;
       if (size_ >= alloc_size_) resize(size_);
@@ -423,6 +425,8 @@ namespace Darts {
 
     size_t insert(const std::vector <node_t> &siblings) {
       if (error_ < 0) return 0;
+      print(siblings.size());
+      print(__LINE__);
 
       size_t begin = 0;
       size_t pos   = _max((size_t)siblings[0].code + 1, next_check_pos_) - 1;
@@ -431,11 +435,15 @@ namespace Darts {
 
       if (alloc_size_ <= pos) resize(pos + 1);
 
+      print(__LINE__);
       while (true) {
       next:
         ++pos;
 
         if (alloc_size_ <= pos) resize(pos + 1);
+      print(__LINE__);
+      print(pos);
+      getchar();
 
         if (array_[pos].check) {
           ++nonzero_num;
@@ -455,6 +463,8 @@ namespace Darts {
         for (size_t i = 1; i < siblings.size(); ++i)
           if (array_[begin + siblings[i].code].check != 0) goto next;
 
+      print(__LINE__);
+      getchar();
         break;
       }
 
@@ -501,7 +511,6 @@ namespace Darts {
     }
 
   };
-typedef Darts::DoubleArrayImpl<char, unsigned char, int, unsigned int> DoubleArray;
 //typedef Darts::DoubleArrayImpl<int16_t, uint16_t, int, unsigned int> DoubleArray;
 
 //#if 4 == 2

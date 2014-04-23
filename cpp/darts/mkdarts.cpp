@@ -46,6 +46,8 @@ int main(int argc, char **argv) {
   Darts::DoubleArray da;
 
   std::vector<const char *> key;
+  std::vector<size_t> keyLengths;
+  std::vector<int> values;
   std::istream *is;
 
   if (file == "-") {
@@ -60,14 +62,19 @@ int main(int argc, char **argv) {
   }
 
   std::string line;
-  while (std::getline(*is, line)) {
+  while ((*is) >> line) {
     char *tmp = new char[line.size()+1];
     std::strcpy(tmp, line.c_str());
     key.push_back(tmp);
+    int value;
+    (*is) >> value;
+    keyLengths.push_back(line.size());
+    values.push_back(value);
+    std::cout << line << value << std::endl;
   }
   if (file != "-") delete is;
 
-  if (da.build(key.size(), &key[0], 0, 0, &progress_bar) != 0){
+  if (da.build(key.size(), &key[0], &keyLengths[0], &values[0], &progress_bar) != 0){
     std::cerr << "Error: cannot build double array  " << file << std::endl;
     return -1;
   }
