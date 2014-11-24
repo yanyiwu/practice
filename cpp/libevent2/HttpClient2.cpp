@@ -77,12 +77,15 @@ class HttpClient {
   void Start() {
     event_base_dispatch(evbase_);
   }
+  //void Query(const char* host, )
  private:
   void Init() {
     evbase_ = event_base_new();
     bev_ = bufferevent_socket_new(evbase_, -1, BEV_OPT_CLOSE_ON_FREE);
-    const char * host = "";
+    const char * host = "yanyiwu.com";
+    int port = 80;
     evhttpcon_ = evhttp_connection_base_bufferevent_new(evbase_, NULL, bev_, host, port);
+    getchar();
     assert(evhttpcon_);
     struct evhttp_request* req = evhttp_request_new(http_request_done, bev_);
 	struct evkeyvalq *output_headers;
@@ -90,7 +93,11 @@ class HttpClient {
     output_headers = evhttp_request_get_output_headers(req);
     evhttp_add_header(output_headers, "Host", host);
     evhttp_add_header(output_headers, "Connection", "close");
-    r = evhttp_make_request(evcon, req, EVHTTP_REQ_GET, uri);
+    char uri[256];
+    uri[0] = '/';
+    uri[1] = '\0';
+    int r = evhttp_make_request(evhttpcon_, req, EVHTTP_REQ_GET, uri);
+    getchar();
     assert(r == 0);
   }
  private:
