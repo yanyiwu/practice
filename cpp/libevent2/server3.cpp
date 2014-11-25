@@ -31,17 +31,18 @@ static void cb(int sock, short which, void *arg) {
 
     switch(which) {
         case EV_WRITE:
-            printf("%s %d\n", __FILE__ , __LINE__);
+            //printf("%s %d\n", __FILE__ , __LINE__);
             break;
         case EV_READ:
-            printf("%s %d\n", __FILE__ , __LINE__);
+            //printf("%s %d\n", __FILE__ , __LINE__);
             break;
         default:
-            printf("%s %d\n", __FILE__ , __LINE__);
+            //printf("%s %d\n", __FILE__ , __LINE__);
+            break;
     }
     printf("%s %d\n", __FILE__ , __LINE__);
-        //event_active(ev, EV_WRITE, 0);
-    event_active(ev2, 0, 0);
+    event_active(ev, EV_WRITE, 0);
+    //event_active(ev2, 0, 0);
 }
 
 
@@ -53,8 +54,8 @@ struct Arg {
 int main(int argc, char **argv) {
     base = event_base_new();
     //ev = event_new(base, -1, EV_PERSIST|EV_READ, cb, NULL);
-    ev = event_new(base, -1, EV_READ, cb, NULL);
-    ev2= event_new(base, -1, EV_READ, cb2, NULL);
+    ev = event_new(base, -1, EV_PERSIST|EV_READ, cb, NULL);
+    ev2= event_new(base, -1, EV_PERSIST|EV_READ, cb2, NULL);
     event_add(ev, NULL);
     event_add(ev2, NULL);
     //event_active(ev, EV_WRITE, 0);
