@@ -8,6 +8,7 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
 #include <thrift/concurrency/PosixThreadFactory.h>
+#include <iostream>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -27,7 +28,8 @@ class testsHandler : virtual public testsIf {
 
   void test1(std::string& _return, const std::string& doc_id) {
     // Your implementation goes here
-    printf("test1\n");
+    cout << __FILE__ << __LINE__ <<  "test1" << endl;
+    _return = "test1";
   }
 
 };
