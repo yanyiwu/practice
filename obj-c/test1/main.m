@@ -13,11 +13,12 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
         Fraction *myFraction;
         
-        myFraction = [Fraction alloc];
-        myFraction = [myFraction init];
+        myFraction = [[Fraction alloc] init];
 
         [myFraction setNumerator: 1];
-        [myFraction setDenominator: 3];
+        myFraction.denominator = 3;
+        
+        [myFraction setTo:100 over:300];
 
         NSLog(@"The value of myFraction is:");
         [myFraction print];
