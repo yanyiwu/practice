@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#include "XcometClient.h"
 #include <iostream>
 
 @interface AppDelegate ()
@@ -14,7 +15,9 @@
 @end
 
 @implementation AppDelegate
-
+{
+    NSMutableData* mData;
+}
 
 /*
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -23,8 +26,75 @@
 }
 */
 
+/*
+- (NSString*) sendRequestSync:(NSString*)urlStr withContent:(NSString*)content
+{
+    printf("hello sendRequestSync\n");
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    
+    [request setURL:[NSURL URLWithString:urlStr]];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:host forHTTPHeaderField:@"Host"];
+    NSString *contentLength = [NSString stringWithFormat:@"%d", [content length]];
+    NSString * response;
+    return response;
+}
+ */
+
+
+// http 请求开始
+- (void)httpConnectionWithRequest {
+    //Xcomet::XcometClient* client = Xcomet::XcometClient::instance();
+    NSLog(@"httpConnectionWithRequest");
+    //NSString *URLPath = [NSString stringWithFormat:@"http://127.0.0.1:11257"];
+    NSString *URLPath = [NSString stringWithFormat:@"http://192.168.2.28:9000/sub?uid=1&seq=1"];
+    NSURL *URL = [NSURL URLWithString:URLPath];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+    [NSURLConnection connectionWithRequest:request delegate:self];
+    
+}
+
+// 获取返回状态，包头信息
+- (void)conncetion:(NSURLConnection*)theConnection didReceiveResponse:(NSURLResponse*)response
+{
+    NSInteger responseCode = [(NSHTTPURLResponse*)response statusCode];
+    NSLog(@"response length=%lld statuscode %ld", [response expectedContentLength], responseCode);
+}
+
+
+
+// 接受数据
+- (void)connection:(NSURLConnection*)theConnection didReceiveData:(NSData *)data
+{
+    if(mData == nil) {
+        mData = [[NSMutableData alloc] initWithData:data];
+    } else {
+        [mData appendData:data];
+    }
+    NSLog(@"response connection");
+}
+
+
+// 连接失败，包含失败。
+- (void)connection:(NSURLConnection*)theConnection didFailWithError:(NSError *)error
+{
+    NSLog(@"%s %d response error%@", __FILE__, __LINE__, [error localizedFailureReason]);
+}
+
+
+
+// 数据接受完毕
+- (void)connectionDidFinishLoading:(NSURLConnection *)theConnection
+{
+    NSString* responseString = [[NSString alloc] initWithData:mData encoding:NSUTF8StringEncoding];
+    NSLog(@"%s %d response body%@", __FILE__, __LINE__, responseString);
+    UILabel *label = (UILabel *)[self.window viewWithTag:100 ];
+    label.text = responseString;
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    //[self sendRequestSync:@"123"];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
@@ -32,6 +102,7 @@
     // label 开始
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(90, 100, 140, 40)];
     label.text = @"标签";
+    label.tag = 100;
     label.textAlignment = NSTextAlignmentCenter;
     [self.window addSubview:label];
     // label 结束
@@ -77,6 +148,7 @@
 
 - (void)touchUpInside
 {
+    [self httpConnectionWithRequest];
     std::cout << "cpp touchUpInside" << std::endl;
     printf("touchUpInside\n");
 }
