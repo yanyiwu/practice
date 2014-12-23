@@ -33,22 +33,23 @@ namespace Xcomet {
     void XcometClient::run()
     {
         int ret;
-        ret = socket_.connect(); // TODO 
-        if(ret == -1) 
-        {
-            cout << __FILE__ << __LINE__ << endl;
-            // retry  TODO
+        while (socket_.connect() == -1) {
+            cout << "retry connecting ..." << endl;
+            usleep(2000000);
         }
+        
 
-        string data;
+        
 
         const char * senddata = "POST / HTTP/1.1\r\nUser-Agent: XcometClient\r\nHost: 127.0.0.1:3333\r\nAccept: */*\r\n\r\n";
+        socket_.send(senddata);
+        
+        string data;
         while(true)
         {
-            socket_.recv(data);
+            ret = socket_.recv(data);
             cout << __FILE__ << __LINE__ << endl;
             cout << data << endl;
-            socket_.send(senddata);
         }
     }
 
