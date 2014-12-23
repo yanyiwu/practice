@@ -9,6 +9,11 @@
 #import "AppDelegate.h"
 #include "XcometClient.h"
 #include <iostream>
+#include <fstream>
+
+using std::cout;
+using std::endl;
+using std::fstream;
 
 @interface AppDelegate ()
 
@@ -50,8 +55,14 @@
     NSString *URLPath = [NSString stringWithFormat:@"http://192.168.2.28:9000/sub?uid=1&seq=1"];
     NSURL *URL = [NSURL URLWithString:URLPath];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-    [NSURLConnection connectionWithRequest:request delegate:self];
     
+    request.HTTPMethod = @"GET";
+    request.timeoutInterval = 60;
+    
+    NSURLConnection *conn = [NSURLConnection connectionWithRequest:request delegate:self];
+    
+    [conn start];
+    //[conn cancel];
 }
 
 // 获取返回状态，包头信息
@@ -98,6 +109,24 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    
+    UILabel *la = [[UILabel alloc] initWithFrame:CGRectMake(50, 100, 50, 50)];
+    la.text = @"图片读取";
+    NSString *image_url = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"xxb.bundle/images/test.jpg"];
+    NSLog(@"%@", image_url);
+    NSString *txt_url = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"xxb.bundle/files/test.txt"];
+    const char * a = [txt_url UTF8String];
+    printf("%s %d %s\n", __FILE__, __LINE__, a);
+    std::fstream fin(a);
+    std::string str;
+    while(std::getline(fin, str)) {
+        cout << __FILE__ << __LINE__ << endl;
+        cout << str << endl;
+    }
+    
+    la.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageWithContentsOfFile:image_url]];
+    [self.window addSubview:la];
     
     // label 开始
     UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(90, 100, 140, 40)];

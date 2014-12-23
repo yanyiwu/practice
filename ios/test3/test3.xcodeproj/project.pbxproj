@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		89599B4D1A4932230035E27D /* xxb.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 89599B4C1A4932230035E27D /* xxb.bundle */; };
 		89BA5D6A1A472BCA00FCBAEF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BA5D691A472BCA00FCBAEF /* main.m */; };
 		89BA5D6D1A472BCA00FCBAEF /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 89BA5D6C1A472BCA00FCBAEF /* AppDelegate.mm */; };
 		89BA5D751A472BCA00FCBAEF /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 89BA5D741A472BCA00FCBAEF /* Images.xcassets */; };
@@ -25,6 +26,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		89599B4C1A4932230035E27D /* xxb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = xxb.bundle; sourceTree = "<group>"; };
 		89BA5D641A472BCA00FCBAEF /* test3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = test3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89BA5D681A472BCA00FCBAEF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		89BA5D691A472BCA00FCBAEF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 		89BA5D671A472BCA00FCBAEF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				89599B4C1A4932230035E27D /* xxb.bundle */,
 				89BA5D681A472BCA00FCBAEF /* Info.plist */,
 				89BA5D691A472BCA00FCBAEF /* main.m */,
 				89BA5D901A48278D00FCBAEF /* XcometClient.cpp */,
@@ -193,6 +196,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89599B4D1A4932230035E27D /* xxb.bundle in Resources */,
 				89BA5D751A472BCA00FCBAEF /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
