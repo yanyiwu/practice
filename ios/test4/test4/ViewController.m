@@ -6,7 +6,6 @@
 //  Copyright (c) 2014年 yanyiwu. All rights reserved.
 //
 
-/*
 #import "ViewController.h"
 
 @interface ViewController ()
@@ -27,4 +26,3 @@
 
 @end
 
-*/
