@@ -9,17 +9,24 @@
 #ifndef __test3__XcometClient__
 #define __test3__XcometClient__
 
-#include <stdio.h>
+#include <string>
+#include "Thread.h"
+#include "Socket.h"
 
 namespace Xcomet {
-class XcometClient {
+
+using namespace std;
+
+class XcometClient: public IThread {
 public:
-    XcometClient();
-    ~XcometClient();
+    XcometClient(const string& ip, int port);
+    virtual ~XcometClient();
 public:
     static XcometClient* instance();
-    void start();
-    void stop();
+    virtual void run();
+    virtual void start();
+    
+    Socket socket_;
 };
     
 } // namespace Xcomet

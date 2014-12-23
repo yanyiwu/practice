@@ -49,7 +49,7 @@ using std::fstream;
 
 // http 请求开始
 - (void)httpConnectionWithRequest {
-    //Xcomet::XcometClient* client = Xcomet::XcometClient::instance();
+    Xcomet::XcometClient* client = Xcomet::XcometClient::instance();
     NSLog(@"httpConnectionWithRequest");
     //NSString *URLPath = [NSString stringWithFormat:@"http://127.0.0.1:11257"];
     NSString *URLPath = [NSString stringWithFormat:@"http://192.168.2.28:9000/sub?uid=1&seq=1"];

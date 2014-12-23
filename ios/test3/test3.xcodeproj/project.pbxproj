@@ -27,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		89599B4C1A4932230035E27D /* xxb.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = xxb.bundle; sourceTree = "<group>"; };
+		89599B4E1A497B3C0035E27D /* Socket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Socket.h; sourceTree = "<group>"; };
+		89599B4F1A497B3C0035E27D /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
 		89BA5D641A472BCA00FCBAEF /* test3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = test3.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		89BA5D681A472BCA00FCBAEF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		89BA5D691A472BCA00FCBAEF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -90,6 +92,8 @@
 		89BA5D671A472BCA00FCBAEF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				89599B4E1A497B3C0035E27D /* Socket.h */,
+				89599B4F1A497B3C0035E27D /* Thread.h */,
 				89599B4C1A4932230035E27D /* xxb.bundle */,
 				89BA5D681A472BCA00FCBAEF /* Info.plist */,
 				89BA5D691A472BCA00FCBAEF /* main.m */,
