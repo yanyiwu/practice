@@ -17,19 +17,19 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.backgroundColor = [UIColor whiteColor];
-    
-    // label 开始
-    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(90, 100, 140, 40)];
-    label.text = @"标签";
-    label.tag = 100;
-    label.textAlignment = NSTextAlignmentCenter;
-    [self.window addSubview:label];
-    // label 结束
+    //self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    //self.window.backgroundColor = [UIColor whiteColor];
+    //
+    //// label 开始
+    //UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(90, 100, 140, 40)];
+    //label.text = @"标签";
+    //label.tag = 100;
+    //label.textAlignment = NSTextAlignmentCenter;
+    //[self.window addSubview:label];
+    //// label 结束
 
-    
-    [self.window makeKeyAndVisible];
+    //
+    //[self.window makeKeyAndVisible];
     return YES;
 }
 
