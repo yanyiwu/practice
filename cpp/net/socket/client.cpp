@@ -8,46 +8,69 @@
 #include <sys/wait.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <string>
+#include <iostream>
+#include <assert.h>
 
-#define SERVPORT 3333
-#define MAXDATASIZE 100
-#define SERVER_IP "127.0.0.1"
-#define DATA  "this is a client message"
 
-typedef struct MyMessage{
-    int ID;
-    char info[256];
-}MyMessage,*pMyMessage;
+using namespace std;
 
-int main(int argc, char* argv[]) {
-    int sockfd, recvbytes;
-    //char buf[MAXDATASIZE];
-    MyMessage recvData;
-    struct sockaddr_in serv_addr;
 
-    if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        perror("socket error!");
-        exit(1);
-    }
-    bzero(&serv_addr, sizeof(serv_addr));
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(SERVPORT);
-    serv_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+class Socket 
+{
+    public:
+        static const size_t BUFFER_INIT_SIZE = 512;
 
-    if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(struct sockaddr))== -1) {
-        perror("connect error!");
-        exit(1);
-    }
-    write(sockfd, DATA, sizeof(DATA));
-    memset((void *)&recvData,0,sizeof(MyMessage));
-    if ((recvbytes = recv(sockfd, (void *)&recvData,sizeof(MyMessage), 0)) == -1) {
-        perror("recv error!");
-        exit(1);
-    }
-    //buf[recvbytes] = '\0';
-    printf("Received:ID=%d,Info= %s",recvData.ID,recvData.info);
-    close(sockfd);
+        Socket(const string& ip, int port): ip_(ip), port_(port), sock_(-1)
+        {
+            if ((sock_ = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+                perror("socket error!");
+                exit(1);
+            }
+        }
+        ~Socket()
+        {
+            if(sock_ > 0) {
+                ::close(sock_);
+            }
+        }
+
+        int connect()
+        {
+            struct sockaddr_in addr;
+            bzero(&addr, sizeof(addr));
+            addr.sin_family = AF_INET;
+            addr.sin_port = htons(port_);
+            addr.sin_addr.s_addr = inet_addr(ip_.c_str());
+
+            return ::connect(sock_, (struct sockaddr *) &addr, sizeof(struct sockaddr));
+        }
+
+        int recv(string& buffer)
+        {
+            assert(sock_ > 0);
+            buffer.resize(BUFFER_INIT_SIZE);
+            return ::recv(sock_, (char *)buffer.c_str(), buffer.size(), 0);
+        }
+        int send(const string& buffer)
+        {
+            return ::send(sock_, buffer.c_str(), buffer.size(), 0);
+        }
+        
+    private:
+        string ip_;
+        int port_;
+
+        int sock_;
+};
+
+int main(int argc, char **argv) {
+    Socket sock("127.0.0.1",3333);
+    int ret;
+    ret = sock.connect();
+    assert(ret != -1);
+    string data;
+    sock.recv(data);
+    sock.send("hello socket");
     return 0;
 }
-
-
