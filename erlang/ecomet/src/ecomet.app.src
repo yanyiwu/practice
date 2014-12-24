@@ -1,0 +1,17 @@
+{application, ecomet,
+ [
+  {description, ""},
+  {vsn, "0.1.0"},
+  {module, [
+           ecomet_app,
+           ecomet_server,
+           ecomet_sup
+           ]},
+  {registered, [ecomet_server, ecomet_sup]},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { ecomet_app, []}},
+  {env, []}
+ ]}.
