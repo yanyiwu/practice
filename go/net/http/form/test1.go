@@ -6,6 +6,7 @@ import (
 
 func HelloServer1(w http.ResponseWriter, r *http.Request) {
 	//r.ParseForm()
+	println(r.Form == nil)
 	val := r.FormValue("key")
 	println("HelloServer1", val)
 	w.Write([]byte(val))
@@ -18,6 +19,7 @@ func HelloServer2(w http.ResponseWriter, r *http.Request) {
 		println("HelloServer2", fe)
 		return
 	}
+	println(r.Form == nil)
 	val := r.FormValue("key")
 	println("HelloServer2", val)
 	w.Write([]byte(val))
@@ -29,6 +31,7 @@ func HelloServer3(w http.ResponseWriter, r *http.Request) {
 		println("HelloServer3", fe)
 		return
 	}
+	println(r.Form == nil)
 	val := r.FormValue("key")
 	println("HelloServer3", val)
 	w.Write([]byte(val))
