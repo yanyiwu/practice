@@ -1,4 +1,4 @@
 out
 Makefile
-hello.Makefile
-hello.target.mk
+*.Makefile
+*.mk
