@@ -77,13 +77,14 @@ int main (void)
      
     //Data part
     data = datagram + sizeof(struct iphdr) + sizeof(struct tcphdr);
-    strcpy(data , "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    //strcpy(data , "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    strcpy(data , "");
      
     //some address resolution
-    strcpy(source_ip , "192.168.1.2");
+    strcpy(source_ip , "192.168.2.28");
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(80);
-    sin.sin_addr.s_addr = inet_addr ("1.2.3.4");
+    sin.sin_port = htons(3333);
+    sin.sin_addr.s_addr = inet_addr ("192.168.2.28");
      
     //Fill in the IP Header
     iph->ihl = 5;
@@ -103,7 +104,8 @@ int main (void)
      
     //TCP Header
     tcph->source = htons (1234);
-    tcph->dest = htons (80);
+    //tcph->dest = htons (80);
+    tcph->dest = htons (3333);
     tcph->seq = 0;
     tcph->ack_seq = 0;
     tcph->doff = 5;  //tcp header size
@@ -155,6 +157,8 @@ int main (void)
         {
             printf ("Packet Send. Length : %d \n" , iph->tot_len);
         }
+        printf("press any key to continue:");
+        getchar();
     }
      
     return 0;
