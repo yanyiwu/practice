@@ -87,8 +87,8 @@ int main (int argc, char ** argv)
      
     //Data part
     data = datagram + sizeof(struct iphdr) + sizeof(struct tcphdr);
-    //strcpy(data , "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    strcpy(data , "");
+    strcpy(data , "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    //strcpy(data , "");
      
     //some address resolution
     sin.sin_family = AF_INET;
@@ -98,7 +98,7 @@ int main (int argc, char ** argv)
     //Fill in the IP Header
     iph->ihl = 5;
     iph->version = 4;
-    iph->tos = 0;
+    iph->tos = 0x04;
     iph->tot_len = sizeof (struct iphdr) + sizeof (struct tcphdr) + strlen(data);
     iph->id = htonl (54321); //Id of this packet
     iph->frag_off = 0;
@@ -107,9 +107,11 @@ int main (int argc, char ** argv)
     iph->check = 0;      //Set to 0 before calculating checksum
     iph->saddr = inet_addr ( source_ip );    //Spoof the source ip address
     iph->daddr = sin.sin_addr.s_addr;
+
      
     //Ip checksum
     iph->check = csum ((unsigned short *) datagram, iph->tot_len);
+    printf("%x\n", iph->check);
      
     //TCP Header
     tcph->source = htons (source_port);
