@@ -9,6 +9,7 @@
 #include<errno.h> //For errno - the error number
 #include<netinet/tcp.h>   //Provides declarations for tcp header
 #include<netinet/ip.h>    //Provides declarations for ip header
+#include <assert.h>
  
 /* 
     96 bit (12 bytes) pseudo header needed for tcp header checksum calculation 
@@ -47,6 +48,20 @@ unsigned short csum(unsigned short *ptr,int nbytes)
     answer=(short)~sum;
      
     return(answer);
+}
+static uint16_t csum2(uint16_t* data, int len) {
+  assert(len % 2 == 0);
+  const uint16_t* p = data;
+  int sum = 0;
+  int i;
+  for (i = 0; i < len; i+=2) {
+    sum += *p++;
+  }
+  while (sum >> 16) {
+    sum = (sum & 0xffff) + (sum >> 16);
+  }
+  assert(sum <= 0xffff);
+  return ~sum;
 }
  
 int main (int argc, char ** argv)
@@ -98,19 +113,21 @@ int main (int argc, char ** argv)
     //Fill in the IP Header
     iph->ihl = 5;
     iph->version = 4;
-    iph->tos = 0x04;
-    iph->tot_len = sizeof (struct iphdr) + sizeof (struct tcphdr) + strlen(data);
+    iph->tos = 0x00;
+    const uint16_t HEADER_LEN = sizeof(struct iphdr) + sizeof(struct tcphdr);
+    iph->tot_len = htons(HEADER_LEN + strlen(data));
     iph->id = htonl (54321); //Id of this packet
     iph->frag_off = 0;
     iph->ttl = 255;
     iph->protocol = IPPROTO_TCP;
     iph->check = 0;      //Set to 0 before calculating checksum
+    iph->check = csum ((unsigned short *) datagram, sizeof(struct iphdr)-8);
     iph->saddr = inet_addr ( source_ip );    //Spoof the source ip address
     iph->daddr = sin.sin_addr.s_addr;
 
      
     //Ip checksum
-    iph->check = csum ((unsigned short *) datagram, iph->tot_len);
+    //iph->check = csum ((unsigned short *) datagram, ntohs(iph->tot_len));
     printf("%x\n", iph->check);
      
     //TCP Header
@@ -159,14 +176,14 @@ int main (int argc, char ** argv)
     while (1)
     {
         //Send the packet
-        if (sendto (s, datagram, iph->tot_len ,  0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
+        if (sendto (s, datagram, ntohs(iph->tot_len) ,  0, (struct sockaddr *) &sin, sizeof (sin)) < 0)
         {
             perror("sendto failed");
         }
         //Data send successfully
         else
         {
-            printf ("Packet Send. Length : %d \n" , iph->tot_len);
+            printf ("Packet Send. Length : %d \n" , ntohs(iph->tot_len));
         }
         printf("press any key to continue:");
         getchar();
