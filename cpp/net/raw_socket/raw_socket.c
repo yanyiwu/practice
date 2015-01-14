@@ -49,8 +49,18 @@ unsigned short csum(unsigned short *ptr,int nbytes)
     return(answer);
 }
  
-int main (void)
+int main (int argc, char ** argv)
 {
+    if(argc < 5) 
+    {
+        printf("args error.");
+        exit(1);
+    }
+    const char * source_ip = argv[1];
+    const int source_port = atoi(argv[2]);
+    const char * dest_ip = argv[3];
+    const int dest_port = atoi(argv[4]); 
+
     //Create a raw socket
     int s = socket (PF_INET, SOCK_RAW, IPPROTO_TCP);
      
@@ -62,7 +72,7 @@ int main (void)
     }
      
     //Datagram to represent the packet
-    char datagram[4096] , source_ip[32] , *data , *pseudogram;
+    char datagram[4096] , *data , *pseudogram;
      
     //zero out the packet buffer
     memset (datagram, 0, 4096);
@@ -81,10 +91,9 @@ int main (void)
     strcpy(data , "");
      
     //some address resolution
-    strcpy(source_ip , "192.168.2.28");
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(3333);
-    sin.sin_addr.s_addr = inet_addr ("192.168.2.28");
+    sin.sin_port = htons(dest_port);
+    sin.sin_addr.s_addr = inet_addr (dest_ip);
      
     //Fill in the IP Header
     iph->ihl = 5;
@@ -103,9 +112,9 @@ int main (void)
     iph->check = csum ((unsigned short *) datagram, iph->tot_len);
      
     //TCP Header
-    tcph->source = htons (1234);
+    tcph->source = htons (source_port);
     //tcph->dest = htons (80);
-    tcph->dest = htons (3333);
+    tcph->dest = htons (dest_port);
     tcph->seq = 0;
     tcph->ack_seq = 0;
     tcph->doff = 5;  //tcp header size
