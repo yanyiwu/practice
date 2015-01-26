@@ -1,0 +1,3 @@
+FROM ubuntu_sshd
+EXPOSE 3761
+EXPOSE 3306
