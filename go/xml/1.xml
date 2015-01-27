@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Persons>
+    <Person>
+        <Name>polaris</Name>
+        <Age>28</Age>
+        <Career>无业游民</Career>
+        <Interests>
+            <Interest>编程</Interest>
+            <Interest>下棋</Interest>
+        </Interests>
+    </Person>
+    <Person>
+        <Name>studygolang</Name>
+        <Age>27</Age>
+        <Career>码农</Career>
+        <Interests>
+            <Interest>编程</Interest>
+            <Interest>下棋</Interest>
+        </Interests>
+    </Person>
+</Persons>
