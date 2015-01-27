@@ -7,7 +7,7 @@ import (
 )
 
 type Result struct {
-	Person []Person
+	Person Person
 }
 type Person struct {
 	Name      string
@@ -30,5 +30,4 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println(result)
-	println(result)
 }
