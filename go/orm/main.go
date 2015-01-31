@@ -7,10 +7,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var dbhost string = "localhost:3306"
-var dbuser string = "root"
+var dbhost string = "127.0.0.1:3306"
+var dbuser string = "inforyoumation"
 var dbpassword string = ""
-var db string = "ormtest"
+var db string = "inforyoumation"
 
 type Book struct {
 	Name   string
