@@ -1,9 +1,10 @@
+## weed-fs data migration example
 
 ```
-./master.sh
-./volume1.sh
-./volume2.sh
-./volume3.sh
+./master.sh (in master)
+./volume1.sh (in volume1)
+./volume2.sh (in volume2)
+./volume3.sh (in volume3)
 ```
 
 ```
@@ -24,6 +25,9 @@ vol3:
 1.dat 1.idx 4.dat 4.idx 5.dat 5.idx 6.dat 6.idx
 ```
 
+
+stop (master.sh, volume1.sh, volume2.sh, volume3.sh)
+
 move vol3/* to vol1 and vol2
 
 ```
@@ -38,6 +42,13 @@ vol3:
 
 ```
 
+start (master.sh, volume1.sh, volume2)
+
+```
+./master.sh (in master)
+./volume1.sh (in volume1)
+./volume2.sh (in volume2)
+```
 
 log
 
