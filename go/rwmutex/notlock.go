@@ -19,8 +19,8 @@ var g Tmp
 func main() {
 	runtime.GOMAXPROCS(4)
 	go func() {
-		for {
-			g = Tmp{rand.Intn(100), strconv.Itoa(rand.Intn(100)), rand.Float64()}
+		for i := 0; i < 10000000; i++ {
+			g = Tmp{rand.Intn(100), strconv.Itoa(i), rand.Float64()}
 			println("set", g.a)
 		}
 	}()
