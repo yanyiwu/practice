@@ -24,6 +24,8 @@ vol3:
 1.dat 1.idx 4.dat 4.idx 5.dat 5.idx 6.dat 6.idx
 ```
 
+move vol3/* to vol1 and vol2
+
 ```
 ls vol1 vol2 vol3
 vol1:
@@ -42,12 +44,21 @@ log
 ```
 localhost:8081/1,03c616736731
 localhost:8082/3,03c7c94d54fc
-localhost:8081/5,03c85548e9df
+localhost:8083/5,03c85548e9df
+localhost:8083/6,03c9e8b580ab
+localhost:8082/3,03cabdadf310
+...
+```
+
+change localhost:8083 to localhost:8082
+
+```
+localhost:8081/1,03c616736731
+localhost:8082/3,03c7c94d54fc
+localhost:8082/5,03c85548e9df
 localhost:8082/6,03c9e8b580ab
 localhost:8082/3,03cabdadf310
-localhost:8082/4,03cb904d6fc0
-localhost:8081/1,03ccf3a9ff45
-localhost:8081/5,03cd9c8f4fce
+...
 ```
 
 
