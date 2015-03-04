@@ -16,10 +16,18 @@ class BobTest: public testing::Test {
             a++;
             ASSERT_TRUE(a == 2);
         }
+        void run2() {
+            a++;
+            ASSERT_TRUE(a == 3);
+        }
     private:
         int a;
 };
 
 TEST_F(BobTest, TestCase1) {
+    run();
+    run2();
+}
+TEST_F(BobTest, TestCase2) {
     run();
 }
