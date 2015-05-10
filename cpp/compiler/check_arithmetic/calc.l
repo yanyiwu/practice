@@ -13,11 +13,14 @@
 "/"                                  { return DIV;    } 
 "("                                  { return OP;     }
 ")"                                  { return CP;     }
+"{"                                  { return OPP;    }
+"}"                                  { return CPP;    }
 "|"                                  { return ABS;    } 
+"="                                  { return EQ;     } 
 \n                                   { return EOL;    } 
-[ t]                                 { /* ignore */   } 
+[ \t]                                { /* ignore */   } 
 ([0-9]*\.?[0-9]+|[0-9]+\.[0-9]*)     { yylval = atof(yytext); return NUMBER; } 
-
+[a-zA-Z0-9]+                         { return WORD;   } 
 
 %%
 
