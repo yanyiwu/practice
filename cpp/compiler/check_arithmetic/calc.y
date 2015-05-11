@@ -22,6 +22,7 @@ exp: factor
 factor: term 
  | factor MUL term { $$ = 0; }
  | factor DIV term { $$ = 0; }
+ | factor EQ term  { $$ = 0; }
 ;
 term: NUMBER
  | WORD        

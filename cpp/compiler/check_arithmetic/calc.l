@@ -52,7 +52,7 @@
     fprintf(stderr, "%s", yytext);
     return NUMBER; 
 } 
-[a-zA-Z0-9]+                         { 
+[a-zA-Z0-9]{1,10}                    { 
     fprintf(stderr, "%s", yytext);
     return WORD;   
 }
