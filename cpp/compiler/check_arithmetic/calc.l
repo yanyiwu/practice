@@ -1,26 +1,67 @@
 %{
-#define YYSTYPE double
+#define YYSTYPE char*
 #include "calc.tab.h"
+#include "string.h"
 #ifdef CALC_LEX
     YYSTYPE yylval;
 #endif
 %}
 
 %%
-"+"                                  { return ADD;    } 
-"-"                                  { return SUB;    } 
-"*"                                  { return MUL;    } 
-"/"                                  { return DIV;    } 
-"("                                  { return OP;     }
-")"                                  { return CP;     }
-"{"                                  { return OPP;    }
-"}"                                  { return CPP;    }
-"|"                                  { return ABS;    } 
-"="                                  { return EQ;     } 
-\n                                   { return EOL;    } 
-[ \t]                                { /* ignore */   } 
-([0-9]*\.?[0-9]+|[0-9]+\.[0-9]*)     { yylval = atof(yytext); return NUMBER; } 
-[a-zA-Z0-9]+                         { return WORD;   } 
+"+"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return ADD;    
+} 
+"-"                                  {
+    fprintf(stderr, "%s", yytext);
+    return SUB;    
+} 
+"*"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return MUL;    
+} 
+"/"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return DIV;    
+} 
+"("                                  { 
+    fprintf(stderr, "%s", yytext);
+    return OP;     
+}
+")"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return CP;     
+}
+"{"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return OPP;    
+}
+"}"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return CPP;    
+}
+"|"                                  { 
+    fprintf(stderr, "%s", yytext);
+    return ABS;    
+} 
+"="                                  { 
+    fprintf(stderr, "%s", yytext);
+    return EQ;     
+} 
+([0-9]*\.?[0-9]+|[0-9]+\.[0-9]*)     { 
+    fprintf(stderr, "%s", yytext);
+    return NUMBER; 
+} 
+[a-zA-Z0-9]+                         { 
+    fprintf(stderr, "%s", yytext);
+    return WORD;   
+}
+\n                                   { 
+    return EOL;    
+} 
+[ \t]                                { 
+    /* ignore */   
+} 
 
 %%
 
