@@ -14,6 +14,6 @@ clean:
 	rm -f calc.tab.c
 	rm -f calc
 test:
-	echo "|2-4|*3-2/(1+3) " | ./calc
+	./calc < testdata
 run:
 	./calc

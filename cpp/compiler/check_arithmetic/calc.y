@@ -10,8 +10,9 @@
 %token EOL 
 %%
 program: /* nothing */ 
- | program exp EOL { printf("legal!\n"); } 
- ;
+ | program exp EOL { fprintf(stderr, "legal!\n"); } 
+ | program error EOL
+;
 exp: factor 
  | exp ADD factor { $$ = 0; }
  | exp SUB factor { $$ = 0; }
@@ -21,10 +22,13 @@ factor: term
  | factor DIV term { $$ = 0; }
 ;
 term: NUMBER
- | WORD
+ | WORD        
  | ABS exp ABS { $$ = 0; }
  | OP exp CP   { $$ = 0; }
  | OPP exp CPP { $$ = 0; }
+ | ABS term ABS { $$ = 0; }
+ | OP term CP   { $$ = 0; }
+ | OPP term CPP { $$ = 0; }
 ;
 %%
 main(int argc, char **argv)
