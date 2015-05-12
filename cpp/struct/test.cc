@@ -22,5 +22,13 @@ int main() {
   cout << sizeof(S1) << endl;
   cout << sizeof(S2) << endl;
   cout << sizeof(S3) << endl;
+  S3 s;
+  s.a = 10;
+  s.b = 300;
+  cout << s.a << endl;
+  cout << s.b << endl;
+  cout << bool(s.b) << endl;
+  s.b = 1;
+  cout << bool(s.b) << endl;
   return 0;
 }
