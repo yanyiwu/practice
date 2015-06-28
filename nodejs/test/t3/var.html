@@ -1,0 +1,12 @@
+<script type="text/javascript">  
+    var a = 10;  
+    function test() {  
+        a = 100;  
+        alert(a);  
+        alert(this.a);  
+        var a;  
+        alert(a);  
+    }  
+    //test();  
+    var b = new test();
+</script>  
