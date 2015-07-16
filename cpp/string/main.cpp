@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 using namespace std;
 
 class A {
@@ -18,5 +19,14 @@ int main() {
   const string& a = ca.Get();
   cout << a << endl;
   cout << a.empty() << endl;
+
+  string s;
+  stringstream ss;
+  ss << 1;
+  ss.str(s);
+  ss.clear();
+  cout << s << endl;
+  cout << ss.str() << endl;
+  
   return 0;
 }
