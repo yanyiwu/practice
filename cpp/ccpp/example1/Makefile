@@ -5,3 +5,5 @@ all:
 	gcc -o cfoo cfoo.o -L. -lfoo -lstdc++
 foo_test:
 	g++ -o foo_test foo_test.cpp
+clean:
+	rm -rf *.o *.a cfoo
