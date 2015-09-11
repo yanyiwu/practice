@@ -3,8 +3,6 @@
 
 #include <stdio.h>
 
-inline void SayHi() {
-  printf("say hi\n");
-}
+void SayHi();
 
 #endif // C_HELLO_H
