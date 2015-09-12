@@ -3,27 +3,17 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/wangbin/jiebago"
+	"github.com/yanyiwu/gojieba"
 	"io"
 	"os"
 	"time"
 )
 
-var seg jiebago.Segmenter
-var t string
-
-func init() {
-	seg.LoadDictionary("dict.txt")
-}
-func print(ch <-chan string) {
-	for word := range ch {
-		t = word
-	}
-}
-
 func main() {
+	jieba := gojieba.New("./jieba.dict.utf8", "./hmm_model.utf8", "user.dict.utf8")
+	defer jieba.Free()
 	lines := []string{}
-	f, err := os.Open("../../nodejs/nodejieba/performance/weicheng.utf8")
+	f, err := os.Open("../../../nodejs/nodejieba/performance/weicheng.utf8")
 	defer f.Close()
 	if nil == err {
 		buff := bufio.NewReader(f)
@@ -39,7 +29,7 @@ func main() {
 	fmt.Println(time.Now())
 	for i := 0; i < 50; i++ {
 		for j := 0; j < len(lines); j++ {
-			print(seg.Cut(lines[j], true))
+			jieba.Cut(lines[j])
 		}
 	}
 	fmt.Println(time.Now())
