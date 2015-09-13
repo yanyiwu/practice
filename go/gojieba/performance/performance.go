@@ -29,7 +29,7 @@ func main() {
 	fmt.Println(time.Now())
 	for i := 0; i < 50; i++ {
 		for j := 0; j < len(lines); j++ {
-			jieba.Cut(lines[j])
+			jieba.Cut(lines[j], true)
 		}
 	}
 	fmt.Println(time.Now())
