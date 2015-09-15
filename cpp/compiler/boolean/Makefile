@@ -13,5 +13,5 @@ test:
 	echo "true and true" | ./boolean
 	echo "true and false" | ./boolean
 	echo "true and false" | ./boolean
-	echo "true and (true and false)" | ./boolean
-	echo "true and (true and true)" | ./boolean
+	echo "true and ((true or false) and false )" | ./boolean
+	echo "true and (true or (false and false ))" | ./boolean

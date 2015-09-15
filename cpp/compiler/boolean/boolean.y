@@ -6,6 +6,7 @@ exp:
         | exp boolexp EOL {printf("= %d\n", $2);}
         ;
 boolexp: boolexp AND boolterm    {$$ = ($1 && $3);}
+        | boolexp OR boolterm    {$$ = ($1 || $3);}
         | boolterm    {$$=$1;}
 ;
 
