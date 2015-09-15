@@ -5,8 +5,10 @@
 %%
 "true"  {return TRUE;}
 "false" {return FALSE;}
-\n                                   { return EOL;    } 
-"and"         {return AND;}
-[()]           {return yytext[0];}
+"and"   {return AND;}
+"or"   {return OR;}
+"("     {return OP;}
+")"     {return CP;}
+\n      {return EOL;} 
 
 %%

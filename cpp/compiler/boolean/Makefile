@@ -8,10 +8,7 @@ boolean.lex: boolean.y boolean.l
 	flex -o boolean.lex.c boolean.l 
 	cc -D CALC_LEX -o $@ boolean.lex.c -lfl 
 clean:
-	rm boolean.lex.c
-	rm boolean.tab.h
-	rm boolean.tab.c
-	rm boolean
+	rm -f boolean.lex.c boolean.tab.h boolean.tab.c boolean
 test:
 	echo "true and true" | ./boolean
 	echo "true and false" | ./boolean
