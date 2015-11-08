@@ -7,6 +7,8 @@
 
 using namespace std;
 
+static const float EPSILON = 1e-6f;
+
 int main() {
   float x = 1.0f;
   float y = 0.0f;
@@ -16,6 +18,7 @@ int main() {
   cout << w << endl;
   cout << 1/float(0) << endl;
   cout << 1.0/0 << endl;
+  cout << 0.01/EPSILON << endl;
   try {
     cout << 1/0 << endl; // crash
   } catch(std::exception& e) {
