@@ -4,4 +4,4 @@ all:
 	g++ -o demo -I./limonp-0.5.0/include thread_pool_demo.cpp -lpthread 
 	./demo
 clean:
-	rm -rf *.gz demo limonp-v0.5.0
+	rm -rf *.gz demo limonp-0.5.0
