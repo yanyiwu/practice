@@ -21,14 +21,13 @@ class Foo {
 void DemoClassFunction() {
   Foo foo;
   cout << foo.chars << endl;
-  {
-    limonp::ThreadPool thread_pool(THREAD_NUM);
-    thread_pool.Start();
-    for (size_t i = 0; i < 20; i++) {
-      char c = i % 10 + '0';
-      thread_pool.Add(limonp::NewClosure(&foo, &Foo::Append, c));
-    }
+  limonp::ThreadPool thread_pool(THREAD_NUM);
+  thread_pool.Start();
+  for (size_t i = 0; i < 20; i++) {
+    char c = i % 10 + '0';
+    thread_pool.Add(limonp::NewClosure(&foo, &Foo::Append, c));
   }
+  thread_pool.Stop();
   cout << foo.chars << endl;
 }
 
