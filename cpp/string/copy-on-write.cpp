@@ -26,9 +26,31 @@ void Test1() {
 }
 
 void Test2() {
+  string x = "12345";
+  string y = x;
+  //cout << x << endl;
+  //cout << y << endl;
+
+
+  string buffer;
+  buffer.resize(5);
+  &y[0] = '0';
+
+  //x[0] = '0';
+  //cout << x << endl;
+  //cout << y << endl;
+
+  cout << size_t(x.c_str()) << endl;
+  cout << size_t(x.data()) << endl;
+  cout << size_t(y.c_str()) << endl;
+  cout << size_t(y.data()) << endl;
+  //char* p = (char*)x.c_str();
+  //p[0] = '0';
+  //cout << x << endl;
+  //cout << y << endl;
 }
 
 int main() {
-  Test1();
+  Test2();
   return 0;
 }
