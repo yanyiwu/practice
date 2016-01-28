@@ -34,7 +34,6 @@ void Test2() {
 
   string buffer;
   buffer.resize(5);
-  &y[0] = '0';
 
   //x[0] = '0';
   //cout << x << endl;
