@@ -3,14 +3,15 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/yanyiwu/gojieba"
 	"io"
 	"os"
 	"time"
+
+	"github.com/yanyiwu/gojieba"
 )
 
 func main() {
-	jieba := gojieba.New("./jieba.dict.utf8", "./hmm_model.utf8", "user.dict.utf8")
+	jieba := gojieba.NewJieba("./jieba.dict.utf8", "./hmm_model.utf8", "user.dict.utf8")
 	defer jieba.Free()
 	lines := []string{}
 	f, err := os.Open("../../../nodejs/nodejieba/performance/weicheng.utf8")
