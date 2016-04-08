@@ -1,20 +1,23 @@
 apply plugin: 'java'
 
-//defaultTasks 'taskB'
-//task taskA << {
-//    println "i am task A"
-//}
-//
-//task taskB << {
-//    println "i am task B"
-//}
-//
-//taskB.dependsOn taskA
+//Identifies project’sversion through a number scheme
+version = 0.1
 
-//dependencies {
-//    compile('org.springframework:spring-core:2.5.6')
-//    compile('org.springframework:spring-beans:2.5.6')
-//    compile('org.springframework:spring-context:2.5.6')
-//    compile('com.google.code.kaptcha:kaptcha:2.3:jdk15')
-//    testCompile('junit:junit:4.7')
-//}
+//Sets Java version compilation compatibility to 1.6
+sourceCompatibility = 1.6
+
+//Adds Main-Class header to JAR file’s manifest
+
+jar {
+manifest {
+    attributes 'Main-Class': 'com.manning.gia.todo.ToDoApp'
+}
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
+}
