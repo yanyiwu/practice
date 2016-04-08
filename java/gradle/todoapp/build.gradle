@@ -1,0 +1,20 @@
+apply plugin: 'java'
+
+//defaultTasks 'taskB'
+//task taskA << {
+//    println "i am task A"
+//}
+//
+//task taskB << {
+//    println "i am task B"
+//}
+//
+//taskB.dependsOn taskA
+
+//dependencies {
+//    compile('org.springframework:spring-core:2.5.6')
+//    compile('org.springframework:spring-beans:2.5.6')
+//    compile('org.springframework:spring-context:2.5.6')
+//    compile('com.google.code.kaptcha:kaptcha:2.3:jdk15')
+//    testCompile('junit:junit:4.7')
+//}
