@@ -7,12 +7,12 @@ namespace unicode {
 struct RuneStr {
   uint32_t rune;
   const char* str;
-  uint8_t len;
+  uint32_t len;
 }; // struct RuneStr
 
 struct RuneStrLite {
   uint32_t rune;
-  uint8_t len;
+  uint32_t len;
 }; // struct RuneStrLite
 
 RuneStrLite DecodeRuneInString(const char* str, size_t len);
