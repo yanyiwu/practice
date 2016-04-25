@@ -9,9 +9,10 @@ sourceCompatibility = 1.6
 //Adds Main-Class header to JAR file’s manifest
 
 jar {
-manifest {
-    attributes 'Main-Class': 'com.manning.gia.todo.ToDoApp'
-}
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes 'Main-Class': 'com.manning.gia.todo.ToDoApp'
+    }
 }
 
 repositories {
@@ -20,4 +21,6 @@ repositories {
 
 dependencies {
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
 }
