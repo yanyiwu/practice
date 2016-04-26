@@ -1,0 +1,3 @@
+package: github.com/yanyiwu/practice/go/glide/test1
+import:
+- package: github.com/yanyiwu/gojieba
