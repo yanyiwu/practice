@@ -1,0 +1,3 @@
+package: github.com/yanyiwu/practice/go/glide/test2
+import:
+- package: github.com/Masterminds/cookoo
