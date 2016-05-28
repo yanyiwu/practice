@@ -3,6 +3,7 @@ import json
 
 consumer = KafkaConsumer('json-topic', 
                          group_id='my-group2',
+                         enable_auto_commit=False,
                          value_deserializer=lambda m: json.loads(m.decode('ascii')),
                          bootstrap_servers=['localhost:9092'])
 print "begin iterating"
