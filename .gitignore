@@ -16,3 +16,5 @@ t.*
 node_modules
 *.class
 .gradle
+*pyc
+db.sqlite3
