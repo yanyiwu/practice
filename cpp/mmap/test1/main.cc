@@ -25,21 +25,34 @@ void* _map(const char *path, size_t size) {
     return ptr;
 }
 
+#define SIZE 1024 *1024
+
 struct BigData {
   int x;
   int y;
+  int array[SIZE];
 };
 
 int main() {
-  const char* filepath = "./mmap.file";
+  //const char* filepath = "./mmap.file";
+  const char* filepath = "/dev/shm/test1";
   BigData* p = (BigData*)_map(filepath, sizeof(BigData));
   cout << p->x << endl;
   cout << p->y << endl;
+  cout << sizeof(BigData) << endl;
   getchar();
   p->x = 3;
   p->y = 4;
-  getchar();
+  p->array[SIZE - 1] = 5;
+  time_t start_ts = time(NULL);
+  for (size_t i = 0; i < SIZE; i++) {
+    p->array[i] = i;
+    //cout << p->array[i] << endl;
+  }
+  time_t start_ts = time(NULL);
+  cout << p->array[SIZE] << endl;
 
+  getchar();
   munmap(p, sizeof(BigData));
   return 0;
 }
