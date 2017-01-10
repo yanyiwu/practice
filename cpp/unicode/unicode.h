@@ -4,8 +4,10 @@
 
 namespace unicode {
 
+typedef uint32_t Rune;
+
 struct RuneStr {
-  uint32_t rune;
+  Rune rune;
   const char* str;
   uint32_t len;
 }; // struct RuneStr
