@@ -27,30 +27,32 @@ function voteme() {
 }
 
 function aschpubbyname() {
-    x=`aschdelegatebyname $1 | egrep '"publicKey": "(.*)"' | sed 's/"publicKey": "\(.*\)",/\1/g'`
+    x=`aschdelegatebyname $1 | egrep '"publicKey": "(.*)"' | sed 's/"publicKey": "\(.*\)",/\1/g' | sed 's/ //g'`
     echo $x
 }
 
 function upvote() {
+    pub=`aschpubbyname $@`
+    echo $pub
     echo "first:"
     read -s s
     echo "second:"
     read -s ss
     echo "$@"
-    asch-cli --main --port $PORT upvote -e "$s" -s $ss -p $@
+    asch-cli --main --host $HOST --port $PORT upvote -e "$s" -s $ss -p $pub
 }
 function downvote() {
+    pub=`aschpubbyname $@`
+    echo $pub
     echo "first:"
     read -s s
     echo "second:"
     read -s ss
-    echo "$@"
-    asch-cli --main --port $PORT downvote -e "$s" -s $ss -p $@
+    asch-cli --main --host $HOST --port $PORT downvote -e "$s" -s $ss -p $pub
 }
 
 function aschdelegates() {
     mainasch getdelegates
-    mainasch getdelegates -o 101 -l 3
 }
 
 function voteeachother() {
