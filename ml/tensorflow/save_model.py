@@ -56,3 +56,50 @@ model.load_weights(checkpoint_path)
 loss,acc = model.evaluate(test_images, test_labels)
 print("Restored model, accuracy: {:5.2f}%".format(100*acc))
 
+# include the epoch in the file name. (uses `str.format`)
+checkpoint_path = "training_2/cp-{epoch:04d}.ckpt"
+checkpoint_dir = os.path.dirname(checkpoint_path)
+
+cp_callback = tf.keras.callbacks.ModelCheckpoint(
+    checkpoint_path, verbose=1, save_weights_only=True,
+    # Save weights, every 5-epochs.
+    period=5)
+
+model = create_model()
+model.fit(train_images, train_labels,
+          epochs = 50, callbacks = [cp_callback],
+          validation_data = (test_images,test_labels),
+          verbose=0)
+
+latest = tf.train.latest_checkpoint(checkpoint_dir)
+
+model = create_model()
+model.load_weights(latest)
+loss, acc = model.evaluate(test_images, test_labels)
+print("Restored model, accuracy: {:5.2f}%".format(100*acc))
+
+
+
+# Save the weights
+model.save_weights('./checkpoints/my_checkpoint')
+
+# Restore the weights
+model = create_model()
+model.load_weights('./checkpoints/my_checkpoint')
+
+loss,acc = model.evaluate(test_images, test_labels)
+print("Restored model, accuracy: {:5.2f}%".format(100*acc))
+
+model = create_model()
+
+model.fit(train_images, train_labels, epochs=5)
+
+# Save entire model to a HDF5 file
+model.save('my_model.h5')
+
+# Recreate the exact same model, including weights and optimizer.
+new_model = keras.models.load_model('my_model.h5')
+new_model.summary()
+
+loss, acc = new_model.evaluate(test_images, test_labels)
+print("Restored model, accuracy: {:5.2f}%".format(100*acc))
