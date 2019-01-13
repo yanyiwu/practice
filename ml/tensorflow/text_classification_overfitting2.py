@@ -83,9 +83,48 @@ l2_model_history = l2_model.fit(train_data, train_labels,
                                 batch_size=512,
                                 validation_data=(test_data, test_labels),
                                 verbose=2)
+l2_model_2 = keras.models.Sequential([
+    keras.layers.Dense(16, kernel_regularizer=keras.regularizers.l2(0.001),
+                       activation=tf.nn.relu, input_shape=(NUM_WORDS,)),
+    keras.layers.Dense(16, kernel_regularizer=keras.regularizers.l2(0.001),
+                       activation=tf.nn.relu),
+    keras.layers.Dense(1, kernel_regularizer=keras.regularizers.l2(0.001),
+                       activation=tf.nn.sigmoid)
+])
+
+l2_model_2.compile(optimizer='adam',
+                 loss='binary_crossentropy',
+                 metrics=['accuracy', 'binary_crossentropy'])
+
+l2_model_2_history = l2_model_2.fit(train_data, train_labels,
+                                epochs=EPOCHS,
+                                batch_size=512,
+                                validation_data=(test_data, test_labels),
+                                verbose=2)
+
+l2_model_3 = keras.models.Sequential([
+    keras.layers.Dense(16, kernel_regularizer=keras.regularizers.l2(0.01),
+                       activation=tf.nn.relu, input_shape=(NUM_WORDS,)),
+    keras.layers.Dense(16, kernel_regularizer=keras.regularizers.l2(0.01),
+                       activation=tf.nn.relu),
+    keras.layers.Dense(1, kernel_regularizer=keras.regularizers.l2(0.01),
+                       activation=tf.nn.sigmoid)
+])
+
+l2_model_3.compile(optimizer='adam',
+                 loss='binary_crossentropy',
+                 metrics=['accuracy', 'binary_crossentropy'])
+
+l2_model_3_history = l2_model_3.fit(train_data, train_labels,
+                                epochs=EPOCHS,
+                                batch_size=512,
+                                validation_data=(test_data, test_labels),
+                                verbose=2)
 
 plot_history([('baseline', baseline_history),
-              ('l2', l2_model_history)])
+              ('l2', l2_model_history),
+              ('l2_3', l2_model_3_history),
+              ('l2_2', l2_model_2_history)])
 
 dpt_model = keras.models.Sequential([
     keras.layers.Dense(16, activation=tf.nn.relu, input_shape=(NUM_WORDS,)),
