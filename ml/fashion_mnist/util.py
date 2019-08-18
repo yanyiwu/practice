@@ -55,9 +55,27 @@ def decode_idx1_ubyte(idx1_ubyte_file):
         offset += struct.calcsize(fmt_image)
     return labels
 
-if __name__ == '__main__':
+# [(100,28,28)...]
+def load_images_data():
     images = decode_idx3_ubyte('./data/t10k-images-idx3-ubyte')
-    for img in images:
-        print img
-        print img.shape
+    return images
+
+def load_labels_data():
+    labels = decode_idx1_ubyte('./data/t10k-labels-idx1-ubyte')
+    return labels
+
+def load_images_data_batch(batch_size=100):
+    images = load_images_data()
+    batch_size = 100
+    for i in range(0, len(images), batch_size):
+        imgs = images[i:i+batch_size]
+        yield imgs
+
+if __name__ == '__main__':
+    images = load_images_data()
+    batch_size = 100
+    for i in range(0, len(images), batch_size):
+        imgs = images[i:i+batch_size]
+        print imgs.shape
+        #print img.shape
     #print decode_idx1_ubyte('./data/t10k-labels-idx1-ubyte')
