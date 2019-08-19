@@ -56,13 +56,22 @@ def decode_idx1_ubyte(idx1_ubyte_file):
     return labels
 
 def load_train_data_batch(batch_size=100):
+    #images = decode_idx3_ubyte('./data/t10k-images-idx3-ubyte')
+    #labels = decode_idx1_ubyte('./data/t10k-labels-idx1-ubyte')
+    images = decode_idx3_ubyte('./data/train-images-idx3-ubyte')
+    labels = decode_idx1_ubyte('./data/train-labels-idx1-ubyte')
+    for i in range(0, len(images), batch_size):
+        imgs = images[i:i+batch_size]
+        lbs = labels[i:i+batch_size]
+        yield imgs, lbs
+
+def load_test_data_batch(batch_size=10000):
     images = decode_idx3_ubyte('./data/t10k-images-idx3-ubyte')
     labels = decode_idx1_ubyte('./data/t10k-labels-idx1-ubyte')
     for i in range(0, len(images), batch_size):
         imgs = images[i:i+batch_size]
         lbs = labels[i:i+batch_size]
         yield imgs, lbs
-
 
 def softmax(x):
     """Compute softmax values for each sets of scores in x."""
