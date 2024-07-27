@@ -23,6 +23,6 @@ jobs:
 
       - name: Run a command
         run: |
-          cd my_directory
-          echo "This command runs in the 'my_directory' directory."
+          cd ml/criteo_uplift
+          echo "hello."
 
