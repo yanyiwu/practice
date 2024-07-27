@@ -1,0 +1,13 @@
+name: My Workflow
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run a command
+        run: |
+          cd my_directory
+          echo "This command runs in the 'my_directory' directory."
