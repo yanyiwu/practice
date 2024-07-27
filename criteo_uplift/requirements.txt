@@ -12,7 +12,7 @@ huggingface-hub==0.24.2
 idna==3.7
 multidict==6.0.5
 multiprocess==0.70.16
-numpy==2.0.1
+numpy==1.26.4
 packaging==24.1
 pandas==2.2.2
 pyarrow==17.0.0
