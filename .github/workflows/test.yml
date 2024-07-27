@@ -1,8 +1,8 @@
-name: ml_criteo_uplift
+name: criteo_uplift
 on: 
   push:
     path:
-      - 'ml/criteo_uplift'
+      - 'criteo_uplift'
   pull_request:
 jobs:
   build:
@@ -23,6 +23,6 @@ jobs:
 
       - name: Run a command
         run: |
-          cd ${{github.workspace}}/ml/criteo_uplift
-          echo "hello."
+          cd ${{github.workspace}}/criteo_uplift
+          python test.py
 
