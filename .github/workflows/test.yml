@@ -23,6 +23,6 @@ jobs:
 
       - name: Run a command
         run: |
-          cd ml/criteo_uplift
+          cd ${{github.workspace}}/ml/criteo_uplift
           echo "hello."
 
