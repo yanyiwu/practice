@@ -1,7 +1,7 @@
 name: criteo_uplift
 on: 
   push:
-    path:
+    paths:
       - 'criteo_uplift'
   pull_request:
 jobs:
