@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'criteo_uplift'
+      - '.github'
   pull_request:
 jobs:
   build:
