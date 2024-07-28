@@ -31,5 +31,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm test
+    - run: |
+        cd ${{github.workspace}}/nodejs/nodejieba/test_latest_npmpack
+        npm ci
+        npm test
