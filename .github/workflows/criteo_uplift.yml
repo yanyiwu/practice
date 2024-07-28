@@ -2,8 +2,8 @@ name: criteo_uplift
 on: 
   push:
     paths:
-      - 'criteo_uplift'
-      - '.github/**'
+      - 'criteo_uplift/**'
+      - '.github/workflows/criteo_uplift.yml'
   pull_request:
 jobs:
   build:

@@ -6,7 +6,8 @@ name: test_latest_npmpack
 on:
   push:
     paths:
-      - 'nodejs/nodejieba/test_latest_npmpack'
+      - 'nodejs/nodejieba/test_latest_npmpack/*'
+      - '.github/workflows/test_latest_npmpack.yml'
   pull_request:
 
 jobs:
