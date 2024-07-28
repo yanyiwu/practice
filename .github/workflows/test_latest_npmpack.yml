@@ -1,13 +1,13 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: test_latest_npmpack
+name: nodejiebademo
 
 on:
   push:
     paths:
-      - 'nodejs/nodejieba/test_latest_npmpack/*'
-      - '.github/workflows/test_latest_npmpack.yml'
+      - 'nodejiebademo/*'
+      - '.github/workflows/nodejiebademo.yml'
   pull_request:
 
 jobs:
@@ -32,6 +32,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: |
-        cd ${{github.workspace}}/nodejs/nodejieba/test_latest_npmpack
+         ${{github.workspace}}/nodejiebademo
         npm ci
         npm test
