@@ -6,6 +6,16 @@ from tensorflow.keras import layers, Model
 
 # 加载Criteo数据集
 ds = load_dataset("reczoo/Criteo_x1")
+
+'''
+DatasetDict({
+    train: Dataset({
+        features: ['label', 'I1', 'I2', 'I3', 'I4', 'I5', 'I6', 'I7', 'I8', 'I9', 'I10', 'I11', 'I12', 'I13', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19', 'C20', 'C21', 'C22', 'C23', 'C24', 'C25', 'C26'],
+        num_rows: 45840617
+    })
+})
+'''
+
 train_ds = ds['train']
 
 # 定义特征和标签
@@ -47,7 +57,7 @@ def to_tf_dataset(dataset):
     ))
 
 # 创建TensorFlow Dataset对象
-train_tf_ds = to_tf_dataset(train_ds).batch(1024).prefetch(tf.data.AUTOTUNE)
+train_tf_ds = to_tf_dataset(train_ds).batch(1024).prefetch(tf.data.AUTOTUNE).take(10)
 
 # 定义输入层
 inputs = {col: layers.Input(name=col, shape=(), dtype=tf.float32 if col.startswith('I') else tf.int32) for col in FEATURE_COLUMNS}
@@ -74,4 +84,4 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 model.summary()
 
 # 训练模型
-model.fit(train_tf_ds, epochs=5)
+model.fit(train_tf_ds, epochs=1)
