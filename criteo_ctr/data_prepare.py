@@ -1,11 +1,8 @@
 import tensorflow as tf
 from datasets import load_dataset
-ds = load_dataset("reczoo/Criteo_x1")
-ds = ds['train'].train_test_split(test_size=0.05)
-print(ds)
 
 FEATURE_COLUMNS = [f'I{i}' for i in range(1, 14)] + [f'C{i}' for i in range(1, 27)]
-print(FEATURE_COLUMNS)
+#print(FEATURE_COLUMNS)
 LABEL_COLUMN = 'label'
 
 def to_tf_dataset(dataset):
@@ -28,6 +25,18 @@ def to_tf_dataset(dataset):
     )
     return tf.data.Dataset.from_generator(gen, output_signature=output_signature)
 
-train_tf_ds = to_tf_dataset(ds['train']).batch(1024).prefetch(tf.data.AUTOTUNE)
-test_tf_ds = to_tf_dataset(ds['test']).batch(1024).prefetch(tf.data.AUTOTUNE)
+def prepare_criteo_ctr_ds(total_num_rows=-1):
+    ds = load_dataset("reczoo/Criteo_x1", split=f"train[:{total_num_rows}]")
+    ds = ds.train_test_split(test_size=0.05)
+    #ds = load_dataset("reczoo/Criteo_x1")
+    #ds = ds['train'].train_test_split(test_size=0.05)
+    print(ds)
+
+    train_tf_ds = to_tf_dataset(ds['train']).batch(1024).prefetch(tf.data.AUTOTUNE)
+    test_tf_ds = to_tf_dataset(ds['test']).batch(1024).prefetch(tf.data.AUTOTUNE)
+    return train_tf_ds, test_tf_ds
+
+if __name__ == '__main__':
+    #train_tf_ds, test_tf_ds = prepare_criteo_ctr_ds()
+    train_tf_ds, test_tf_ds = prepare_criteo_ctr_ds(10*1000)
 

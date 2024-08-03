@@ -22,3 +22,7 @@ def get_model():
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     return model
+
+if __name__ == '__main__':
+    model = get_model()
+    model.summary()
