@@ -1,2 +1,0 @@
-#!/bin/bash
-rm -rf mnist_model; ./model.py
