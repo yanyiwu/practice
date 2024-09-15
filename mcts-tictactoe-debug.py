@@ -13,7 +13,7 @@ class Node:
 def ucb1(node):
     if node.visits == 0:
         return float('inf')
-    return node.wins / node.visits + 1.41 * math.sqrt(math.log(node.parent.visits) / node.visits)
+    return node.wins / node.visits + 10 * math.sqrt(math.log(node.parent.visits) / node.visits)
 
 def select_child_ucb1(node):
     return max(node.children, key=ucb1)
@@ -58,8 +58,7 @@ def mcts(state, max_time):
         
         # Expansion
         if not is_terminal(node.state):
-            expand(node)
-            node = random.choice(node.children)
+            node = expand(node)
         
         # Simulation
         result = simulate(node)
@@ -69,11 +68,14 @@ def mcts(state, max_time):
 
         # Print tree stats every 100 iterations
         iteration += 1
-        if iteration % 1 == 0:
+        if iteration % 1000 == 0:
             total_nodes, max_depth = get_tree_stats(root)
             print(f"\nIteration {iteration}:")
             print(f"Total nodes: {total_nodes}")
             print(f"Max depth: {max_depth}")
+
+    print("\nFinal children statistics:")
+    print_children_stats(root)
 
     best_child = max(root.children, key=lambda c: c.visits)
     return best_child.state
@@ -129,6 +131,33 @@ def make_random_move(state, player):
         move = random.choice(possible_moves)
         state[move] = player
 
+def print_children_stats(node):
+    if not node.children:
+        print("This node has no children.")
+        return
+
+    total_visits = sum(child.visits for child in node.children)
+    total_wins = sum(child.wins for child in node.children)
+    
+    print(f"Total visits to children: {total_visits}")
+    print(f"Total wins of children: {total_wins}")
+    print("Children statistics:")
+    
+    for i, child in enumerate(node.children):
+        move = get_move_from_states(node.state, child.state)
+        visit_percentage = (child.visits / total_visits) * 100 if total_visits > 0 else 0
+        win_rate = (child.wins / child.visits) * 100 if child.visits > 0 else 0
+        print(f"Child {i+1} (Move: {move}): "
+              f"{child.visits} visits ({visit_percentage:.2f}%), "
+              f"{child.wins} wins, "
+              f"Win rate: {win_rate:.2f}%")
+
+def get_move_from_states(parent_state, child_state):
+    for i in range(len(parent_state)):
+        if parent_state[i] != child_state[i]:
+            return i
+    return None  # This should not happen in a valid game
+
 # Test the MCTS algorithm
 initial_state = ['X', '-', '-',
                 '-', 'X', '-',
@@ -136,6 +165,6 @@ initial_state = ['X', '-', '-',
 initial_state = ['-', '-', '-',
                 '-', '-', '-',
                 '-', '-', '-']
-best_state = mcts(initial_state, max_time=100)
+best_state = mcts(initial_state, max_time=10)
 print("Initial state:", initial_state)
 print("Best state found:", best_state)
