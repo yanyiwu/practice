@@ -12,7 +12,8 @@ class Node:
 def ucb1(node, parent_visits):
     if node.visits == 0:
         return float('inf')
-    return node.value / node.visits + math.sqrt(2 * math.log(parent_visits) / node.visits)
+    r = node.value / node.visits + math.sqrt(2 * math.log(parent_visits) / node.visits)
+    return r
 
 def select(node):
     while node.children:
@@ -23,8 +24,8 @@ def expand(node, game):
     if game.is_terminal(node.state):
         return node
     for action in game.get_actions(node.state):
-        if action not in [c.state for c in node.children]:
-            new_state = game.get_next_state(node.state, action)
+        new_state = game.get_next_state(node.state, action)
+        if new_state not in [c.state for c in node.children]:
             new_node = Node(new_state, parent=node)
             node.children.append(new_node)
             return new_node
