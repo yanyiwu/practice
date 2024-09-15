@@ -28,6 +28,7 @@ def expand(node):
 
 def simulate(node, starting_player='O'):
     state = node.state[:]
+    print_board(state)
     current_player = starting_player
     while True:
         possible_moves = get_possible_moves(state)
@@ -35,6 +36,7 @@ def simulate(node, starting_player='O'):
             return 0  # Draw
         move = random.choice(possible_moves)
         state[move] = current_player
+        print_board(state)
         if is_win(state, current_player):
             return 1 if current_player == 'X' else -1
         current_player = 'O' if current_player == 'X' else 'X'
@@ -46,11 +48,9 @@ def backpropagate(node, result):
         node = node.parent
         result = -result
 
-def mcts(state, max_time):
+def mcts(state, max_iterations):
     root = Node(state)
-    end_time = time.time() + max_time
-    iteration = 0
-    while time.time() < end_time:
+    for iteration in range(max_iterations):
         node = root
         # Selection
         while node.children and not is_terminal(node.state):
@@ -66,9 +66,11 @@ def mcts(state, max_time):
         # Backpropagation
         backpropagate(node, result)
 
+        print_tree(node)
+
         # Print tree stats every 100 iterations
         iteration += 1
-        if iteration % 1000 == 0:
+        if iteration % 1 == 0:
             total_nodes, max_depth = get_tree_stats(root)
             print(f"\nIteration {iteration}:")
             print(f"Total nodes: {total_nodes}")
@@ -158,13 +160,89 @@ def get_move_from_states(parent_state, child_state):
             return i
     return None  # This should not happen in a valid game
 
-# Test the MCTS algorithm
-initial_state = ['X', '-', '-',
-                '-', 'X', '-',
-                '-', '-', '-']
-initial_state = ['-', '-', '-',
-                '-', '-', '-',
-                '-', '-', '-']
-best_state = mcts(initial_state, max_time=10)
-print("Initial state:", initial_state)
-print("Best state found:", best_state)
+# Completely empty board
+initial_state_empty = ['-', '-', '-',
+                       '-', '-', '-',
+                       '-', '-', '-']
+
+# X starts, playing in the center
+initial_state_center = ['-', '-', '-',
+                        '-', 'X', '-',
+                        '-', '-', '-']
+
+# Mid-game state
+initial_state_midgame = ['X', 'O', '-',
+                         '-', 'X', '-',
+                         'O', '-', '-']
+
+# State where X has a chance to win
+initial_state_x_winning = ['X', 'X', '-',
+                           'O', 'O', '-',
+                           '-', '-', '-']
+
+# State where O has a chance to win
+initial_state_o_winning = ['O', '-', 'X',
+                           'X', 'O', '-',
+                           '-', '-', 'X']
+
+# State close to a draw
+initial_state_near_draw = ['X', 'O', 'X',
+                           'O', 'X', '-',
+                           'O', 'X', 'O']
+
+# Test function
+def test_mcts(initial_state, max_iterations=1000):
+    print("Initial state:")
+    print_board(initial_state)
+    best_state = mcts(initial_state, max_iterations)
+    print("\nBest move found:")
+    print_board(best_state)
+    print("\n" + "="*20 + "\n")
+
+# Helper function to print the board
+def print_board(state):
+    print("\n" + "="*20 + "\n")
+    for i in range(0, 9, 3):
+        print(" ".join(state[i:i+3]))
+    print("\n" + "="*20 + "\n")
+
+def print_tree(node, prefix="", is_last=True, max_depth=3):
+    if max_depth < 0:
+        return
+
+    # Print current node
+    state_str = "".join(node.state)
+    node_info = f"{state_str} (V:{node.visits}, W:{node.wins:.1f})"
+    print(f"{prefix}{'└── ' if is_last else '├── '}{node_info}")
+
+    # Prepare prefix for children
+    child_prefix = prefix + ("    " if is_last else "│   ")
+
+    # Print children
+    if node.children:
+        children = list(node.children)
+        for i, (move, child) in enumerate(children):
+            is_last_child = (i == len(children) - 1)
+            print(f"{child_prefix}│")
+            print(f"{child_prefix}Move {move}:")
+            print_tree(child, child_prefix, is_last_child, max_depth - 1)
+    elif max_depth > 0:
+        print(f"{child_prefix}(Leaf node)")
+
+
+# List of all test states
+test_states = [
+    initial_state_empty,
+    initial_state_center,
+    initial_state_midgame,
+    initial_state_x_winning,
+    initial_state_o_winning,
+#    initial_state_near_draw,
+]
+
+# Run the tests in a loop
+for i, state in enumerate(test_states):
+    print(f"\nTest case {i}:")
+    print_board(state)
+    test_mcts(state, max_iterations=1000)  # 你可以根据需要调整迭代次数
+
