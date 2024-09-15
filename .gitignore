@@ -18,4 +18,4 @@ node_modules
 .gradle
 *pyc
 db.sqlite3
-criteo_uplift/myenv/
+venv*
