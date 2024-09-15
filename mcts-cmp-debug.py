@@ -3,7 +3,8 @@ import math
 
 class GuessNumberGame:
     def __init__(self):
-        self.target = random.randint(1, 100)
+        self.rng = random.Random()  # 创建独立的随机数生成器
+        self.target = self.rng.randint(1, 100)
         self.max_steps = 10
 
     def guess(self, number):
@@ -56,8 +57,9 @@ def expand(node, game):
     return node
 
 def simulate(game, state):
+    rng = random.Random()  # MCTS 模拟的随机数生成器
     while not game.is_terminal(state):
-        guess = random.randint(1, 100)
+        guess = rng.randint(1, 100)  # 使用 MCTS 模拟的随机数生成器
         result = game.guess(guess)
         state['steps'] += 1
         state['last_guess'] = guess
@@ -83,6 +85,7 @@ def mcts(game, num_iterations):
     return best_child.state['last_guess']
 
 def monte_carlo(game, num_simulations):
+    rng = random.Random()  # Monte Carlo 方法的随机数生成器
     best_guess = None
     best_score = float('-inf')
 
@@ -96,7 +99,7 @@ def monte_carlo(game, num_simulations):
                 state['last_guess'] = guess
                 if result == 0:
                     break
-                guess = random.randint(1, 100)
+                guess = rng.randint(1, 100)  # 使用 Monte Carlo 的随机数生成器
             total_reward += game.get_reward(state)
         
         average_reward = total_reward / num_simulations
