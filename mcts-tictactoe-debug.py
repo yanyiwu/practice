@@ -10,40 +10,34 @@ class Node:
         self.wins = 0
         self.visits = 0
 
-def uct(node):
+def ucb1(node):
     if node.visits == 0:
         return float('inf')
     return node.wins / node.visits + 1.41 * math.sqrt(math.log(node.parent.visits) / node.visits)
 
-def select_child(node):
-    best_score = -float('inf')
-    best_child = None
-    for child in node.children:
-        score = uct(child)
-        if score > best_score:
-            best_score = score
-            best_child = child
-    return best_child
+def select_child_ucb1(node):
+    return max(node.children, key=ucb1)
 
 def expand(node):
     possible_moves = get_possible_moves(node.state)
     for move in possible_moves:
-        new_state = make_move(node.state, move)
+        new_state = make_move(node.state, move, 'X')
         child = Node(new_state, node)
         node.children.append(child)
     return random.choice(node.children)
 
-def simulate(node):
+def simulate(node, starting_player='O'):
     state = node.state[:]
+    current_player = starting_player
     while True:
         possible_moves = get_possible_moves(state)
         if not possible_moves:
-            return 0
-        make_random_move(state)
-        if is_win(state, 'X'):
-            return 1
-        if is_win(state, 'O'):
-            return -1
+            return 0  # Draw
+        move = random.choice(possible_moves)
+        state[move] = current_player
+        if is_win(state, current_player):
+            return 1 if current_player == 'X' else -1
+        current_player = 'O' if current_player == 'X' else 'X'
 
 def backpropagate(node, result):
     while node:
@@ -55,29 +49,51 @@ def backpropagate(node, result):
 def mcts(state, max_time):
     root = Node(state)
     end_time = time.time() + max_time
+    iteration = 0
     while time.time() < end_time:
         node = root
-        while node.children:
-            node = select_child(node)
-        if is_terminal(node.state):
-            result = evaluate(node.state)
-            backpropagate(node, result)
-            continue
-        if not node.children:
+        # Selection
+        while node.children and not is_terminal(node.state):
+            node = select_child_ucb1(node)
+        
+        # Expansion
+        if not is_terminal(node.state):
             expand(node)
-        child = random.choice(node.children)
-        result = simulate(child)
-        backpropagate(child, result)
-    
-    best_child = None
-    best_score = -float('inf')
-    for child in root.children:
-        score = child.wins / child.visits
-        if score > best_score:
-            best_score = score
-            best_child = child
+            node = random.choice(node.children)
+        
+        # Simulation
+        result = simulate(node)
+        
+        # Backpropagation
+        backpropagate(node, result)
+
+        # Print tree stats every 100 iterations
+        iteration += 1
+        if iteration % 1 == 0:
+            total_nodes, max_depth = get_tree_stats(root)
+            print(f"\nIteration {iteration}:")
+            print(f"Total nodes: {total_nodes}")
+            print(f"Max depth: {max_depth}")
+
+    best_child = max(root.children, key=lambda c: c.visits)
     return best_child.state
 
+def get_tree_stats(node):
+    def dfs(n, current_depth):
+        if not n.children:
+            return 1, current_depth
+        
+        count = 1
+        max_depth = current_depth
+        for child in n.children:
+            child_count, child_depth = dfs(child, current_depth + 1)
+            count += child_count
+            max_depth = max(max_depth, child_depth)
+        
+        return count, max_depth
+
+    total_nodes, max_depth = dfs(node, 0)
+    return total_nodes, max_depth
 
 def is_terminal(state):
     return is_win(state, 'X') or is_win(state, 'O') or '-' not in state
@@ -102,21 +118,24 @@ def evaluate(state):
 def get_possible_moves(state):
     return [i for i, cell in enumerate(state) if cell == '-']
 
-def make_move(state, move):
+def make_move(state, move, player):
     new_state = state[:]
-    new_state[move] = 'X'  # Assuming 'X' is the current player
+    new_state[move] = player  # Use the player parameter, defaulting to 'X'
     return new_state
 
-def make_random_move(state):
+def make_random_move(state, player):
     possible_moves = get_possible_moves(state)
     if possible_moves:
         move = random.choice(possible_moves)
-        state[move] = 'O'  # Assuming 'O' is the opponent
+        state[move] = player
 
 # Test the MCTS algorithm
 initial_state = ['X', '-', '-',
                 '-', 'X', '-',
                 '-', '-', '-']
-best_state = mcts(initial_state, max_time=5)
+initial_state = ['-', '-', '-',
+                '-', '-', '-',
+                '-', '-', '-']
+best_state = mcts(initial_state, max_time=100)
 print("Initial state:", initial_state)
 print("Best state found:", best_state)
