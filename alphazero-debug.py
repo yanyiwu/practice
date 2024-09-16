@@ -160,7 +160,7 @@ class AlphaZero:
             mcts_prob = [0] * 9
             for child in root.children:
                 mcts_prob[child.move] = child.visit_count
-            mcts_prob = np.array(mcts_prob)
+            mcts_prob = np.array(mcts_prob, dtype=np.float32)
             if np.sum(mcts_prob) > 0:
                 mcts_prob /= np.sum(mcts_prob)
             else:
@@ -216,9 +216,17 @@ while True:
     if game.current_player == 1:
         state = game.get_state()
         root = alphazero.mcts.search(state)
+        if not root.children:
+            print("No valid moves found. Ending the game.")
+            break
         mcts_prob = [child.visit_count for child in root.children]
-        move = root.children[np.argmax(mcts_prob)].move
-        game.make_move((move // 3, move % 3))
+        if all(prob == 0 for prob in mcts_prob):
+            print("All move probabilities are zero. Choosing a random move.")
+            chosen_child = random.choice(root.children)
+        else:
+            chosen_child = root.children[np.argmax(mcts_prob)]
+        move = chosen_child.move
+        game.make_move((move // 3, move % 3))  
     else:
         valid_moves = game.get_valid_moves()
         move = random.choice(valid_moves)
