@@ -47,21 +47,25 @@ class NeuralNetwork:
 
 # MCTS Node
 class MCTSNode:
-    def __init__(self, game, parent=None, move=None):
+    def __init__(self, game, parent=None, move=None, prior=None):
         self.game = game
         self.parent = parent
         self.move = move
         self.children = []
         self.visits = 0
         self.value = 0
+        self.prior = prior
 
     def expand(self, policy):
-        for move in self.game.get_legal_moves():
+        legal_moves = self.game.get_legal_moves()
+        for move in legal_moves:
             child_game = GoGame()
             child_game.board = self.game.board.copy()
             child_game.current_player = self.game.current_player
             child_game.make_move(move)
-            self.children.append(MCTSNode(child_game, self, move))
+            move_index = move[0] * 5 + move[1]  # Convert 2D move to 1D index
+            move_prior = policy[move_index]
+            self.children.append(MCTSNode(child_game, self, move, prior=move_prior))
 
     def select_child(self):
         return max(self.children, key=lambda c: c.value / (c.visits + 1) + 0.5 * np.sqrt(self.visits) / (c.visits + 1))
