@@ -34,7 +34,7 @@ nvidia-cusparse-cu12==12.1.0.106
 nvidia-nccl-cu12==2.20.5
 nvidia-nvjitlink-cu12==12.5.82
 nvidia-nvtx-cu12==12.1.105
-oauthlib==3.2.0
+oauthlib==3.2.2
 pillow==10.4.0
 PuLP==2.9.0
 PyGObject==3.42.1
