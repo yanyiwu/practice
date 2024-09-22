@@ -19,3 +19,4 @@ node_modules
 *pyc
 db.sqlite3
 venv*
+api_key.txt
