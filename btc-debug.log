@@ -17,6 +17,15 @@ sudo apt-get install -y \
     zlib1g-dev
 
 
+
+cmake -B build
+
+cmake --build build
+
+cd build
+
+./src/bitcoind -testnet
+
 ./src/bitcoin-cli -testnet getblockchaininfo
 
 {
