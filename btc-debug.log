@@ -45,3 +45,18 @@ cd build
     "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications"
   ]
 }
+
+du -sh ~/.bitcoin/*
+
+0       /home/yanyiwu/.bitcoin/anchors.dat
+0       /home/yanyiwu/.bitcoin/banlist.json
+16M     /home/yanyiwu/.bitcoin/blocks
+0       /home/yanyiwu/.bitcoin/chainstate
+12K     /home/yanyiwu/.bitcoin/debug.log
+244K    /home/yanyiwu/.bitcoin/fee_estimates.dat
+0       /home/yanyiwu/.bitcoin/mempool.dat
+56K     /home/yanyiwu/.bitcoin/peers.dat
+0       /home/yanyiwu/.bitcoin/settings.json
+73M     /home/yanyiwu/.bitcoin/signet
+55G     /home/yanyiwu/.bitcoin/testnet3
+0       /home/yanyiwu/.bitcoin/wallets
