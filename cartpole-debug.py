@@ -43,7 +43,8 @@ for episode in range(EPISODES):
         else:
             action = np.random.randint(0, env.action_space.n)
         
-        new_state, reward, done, _ = env.step(action)
+        new_state, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
         new_state = discretize_state(new_state)
         episode_reward += reward
 
@@ -89,7 +90,8 @@ for episode in range(test_episodes):
     while not done:
         env.render()
         action = np.argmax(q_table[state])
-        new_state, reward, done, _ = env.step(action)
+        new_state, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
         new_state = discretize_state(new_state)
         episode_reward += reward
         state = new_state
