@@ -1,0 +1,38 @@
+sudo apt-get update
+
+sudo apt-get install -y \
+    build-essential \
+    libtool \
+    autotools-dev \
+    automake \
+    pkg-config \
+    libssl-dev \
+    libevent-dev \
+    libboost-system-dev \
+    libboost-filesystem-dev \
+    libboost-program-options-dev \
+    libboost-thread-dev \
+    libboost-chrono-dev \
+    libboost-test-dev \
+    zlib1g-dev
+
+
+./src/bitcoin-cli -testnet getblockchaininfo
+
+{
+  "chain": "test",
+  "blocks": 668671,
+  "headers": 3125546,
+  "bestblockhash": "000000000050bcb4128e36d2aade5870347ec28d33125b793e0425eddf1758e0",
+  "difficulty": 16,
+  "time": 1453846252,
+  "mediantime": 1453846226,
+  "verificationprogress": 0.04491161805616339,
+  "initialblockdownload": true,
+  "chainwork": "0000000000000000000000000000000000000000000000075b865331da20d43e",
+  "size_on_disk": 5764386151,
+  "pruned": false,
+  "warnings": [
+    "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications"
+  ]
+}
