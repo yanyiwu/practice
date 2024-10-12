@@ -1,0 +1,20 @@
+
+Episode: 42000, Avg Reward: 22.09, Epsilon: 0.10
+Episode: 43000, Avg Reward: 22.29, Epsilon: 0.10
+Episode: 44000, Avg Reward: 22.31, Epsilon: 0.10
+Episode: 45000, Avg Reward: 22.29, Epsilon: 0.10
+Episode: 46000, Avg Reward: 22.40, Epsilon: 0.10
+Episode: 47000, Avg Reward: 22.39, Epsilon: 0.10
+Episode: 48000, Avg Reward: 22.39, Epsilon: 0.10
+Episode: 49000, Avg Reward: 22.07, Epsilon: 0.10
+
+Test Episode: 0, Reward: 28.0
+Test Episode: 1, Reward: 19.0
+Test Episode: 2, Reward: 19.0
+Test Episode: 3, Reward: 19.0
+Test Episode: 4, Reward: 19.0
+Test Episode: 5, Reward: 24.0
+Test Episode: 6, Reward: 19.0
+Test Episode: 7, Reward: 17.0
+Test Episode: 8, Reward: 22.0
+Test Episode: 9, Reward: 27.0
