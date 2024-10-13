@@ -97,7 +97,7 @@ if __name__ == "__main__":
     action_size = env.action_space.n
     agent = DQNAgent(state_size, action_size)
     BATCH_SIZE = 32
-    EPOCHS = 5  # 增加训练回合数
+    EPOCHS = 50  # 增加训练回合数
     MAX_STEPS = 60
     REWARD_IF_DONE = -10
 
