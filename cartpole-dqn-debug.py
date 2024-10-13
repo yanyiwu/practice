@@ -6,7 +6,7 @@ from collections import deque
 import random
 
 # 定义DQN类
-class DQN:
+class DQNAgent:
     def __init__(self, state_size, action_size):
         self.state_size = state_size
         self.action_size = action_size
@@ -19,6 +19,9 @@ class DQN:
         self.model = self._build_model()
 
     def _build_model(self):
+        # model input: state_size
+        # model output: action_size
+        # loss function: mse
         model = keras.Sequential([
             keras.layers.Dense(24, input_dim=self.state_size, activation='relu'),
             keras.layers.Dense(24, activation='relu'),
@@ -39,13 +42,17 @@ class DQN:
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, next_state, done in minibatch:
-            target = reward
+            target_q_value = reward
             if not done:
-                target = (reward + self.gamma *
-                          np.amax(self.model.predict(next_state)[0]))
-            target_f = self.model.predict(state)
-            target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+                target_q_value = (reward + self.gamma *
+                                  np.amax(self.model.predict(next_state)[0]))
+            
+            # current_q_values shape: (1, action_size)
+            current_q_values = self.model.predict(state)
+            
+            current_q_values[0][action] = target_q_value
+            # model label: current_q_values
+            self.model.fit(state, current_q_values, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
@@ -73,9 +80,9 @@ if __name__ == "__main__":
     env = gym.make('CartPole-v1')
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
-    agent = DQN(state_size, action_size)
+    agent = DQNAgent(state_size, action_size)
     batch_size = 32
-    epochs = 5  # 增加训练回合数
+    epochs = 50  # 增加训练回合数
 
     # 训练阶段
     for e in range(epochs):
