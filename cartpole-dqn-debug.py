@@ -56,31 +56,39 @@ class DQNAgent:
             
             # current_q_values shape: (1, action_size)
             current_q_values = self.model.predict(state)
-            
-            current_q_values[0][action] = target_q_value
-            # model label: current_q_values
-            self.model.fit(state, current_q_values, epochs=1, verbose=0)
+
+            updated_q_values = current_q_values.copy()
+            updated_q_values[0][action] = target_q_value
+
+            # model label: updated_q_values
+            self.model.fit(state, updated_q_values, epochs=1, verbose=0)
+
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
 def test_agent(agent, env, episodes=10):
     scores = []
+    total_rewards = []
     for e in range(episodes):
         state = env.reset()[0]
         state = np.reshape(state, [1, state_size])
         done = False
         score = 0
+        total_reward = 0
         while not done:
             action = agent.act(state)
             next_state, reward, done, _, _ = env.step(action)
             next_state = np.reshape(next_state, [1, state_size])
             state = next_state
             score += 1
+            total_reward += reward
             if done:
                 break
         scores.append(score)
-        print(f"Test Episode: {e+1}/{episodes}, Score: {score}")
+        total_rewards.append(total_reward)
+        print(f"Test Episode: {e+1}/{episodes}, Score: {score}, Total Reward: {total_reward}")
     print(f"Average Score: {np.mean(scores)}")
+    print(f"Average Reward: {np.mean(total_rewards)}")
 
 # 主程序
 if __name__ == "__main__":
@@ -88,25 +96,29 @@ if __name__ == "__main__":
     state_size = env.observation_space.shape[0]
     action_size = env.action_space.n
     agent = DQNAgent(state_size, action_size)
-    batch_size = 32
-    epochs = 50  # 增加训练回合数
+    BATCH_SIZE = 32
+    EPOCHS = 2  # 增加训练回合数
+    MAX_STEPS = 30
+    REWARD_IF_DONE = -10
 
     # 训练阶段
-    for e in range(epochs):
+    for e in range(EPOCHS):
         state = env.reset()[0]
         state = np.reshape(state, [1, state_size])
-        for time in range(50):  # 每个回合的最大步数
+        for time in range(MAX_STEPS):  # 每个回合的最大步数
             action = agent.act(state)
             next_state, reward, done, _, _ = env.step(action)
-            reward = reward if not done else -10
+
+            reward = reward if not done else REWARD_IF_DONE
+            
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             if done:
-                print(f"episode: {e}/{500}, score: {time}, e: {agent.epsilon:.2}")
+                print(f"episode: {e}/{EPOCHS}, score: {time}, e: {agent.epsilon:.2}")
                 break
-            if len(agent.memory) > batch_size:
-                agent.replay(batch_size)
+            if len(agent.memory) > BATCH_SIZE:
+                agent.replay(BATCH_SIZE)
 
     # 测试阶段
     print("\nTesting the trained agent:")
