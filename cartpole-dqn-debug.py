@@ -40,28 +40,28 @@ class DQNAgent:
         return np.argmax(act_values[0])
 
     def replay(self, batch_size):
+        if len(self.memory) < batch_size:
+            return
         minibatch = random.sample(self.memory, batch_size)
-        for state, action, reward, next_state, done in minibatch:
-            # state shape: (1, state_size)
-            # action shape: (1,)    
-            # reward shape: ()
-            # next_state shape: (1, state_size)
-            # done shape: ()
-            if done:
-                target_q_value = reward
+        states = np.array([t[0] for t in minibatch]).reshape(batch_size, self.state_size)
+        actions = np.array([t[1] for t in minibatch])
+        rewards = np.array([t[2] for t in minibatch])
+        next_states = np.array([t[3] for t in minibatch]).reshape(batch_size, self.state_size)
+        dones = np.array([t[4] for t in minibatch])
+
+        # 预测当前状态和下一状态的 Q 值
+        target_qs = self.model.predict(states)
+        next_qs = self.model.predict(next_states)
+
+        # 更新目标 Q 值
+        for i in range(batch_size):
+            if dones[i]:
+                target_qs[i][actions[i]] = rewards[i]
             else:
-                next_q_values = self.model.predict(next_state)[0]
-                max_next_q_value = np.amax(next_q_values)
-                target_q_value = reward + self.gamma * max_next_q_value
-            
-            # current_q_values shape: (1, action_size)
-            current_q_values = self.model.predict(state)
+                target_qs[i][actions[i]] = rewards[i] + self.gamma * np.amax(next_qs[i])
 
-            updated_q_values = current_q_values.copy()
-            updated_q_values[0][action] = target_q_value
-
-            # model label: updated_q_values
-            self.model.fit(state, updated_q_values, epochs=1, verbose=0)
+        # 一次性训练整个批次
+        self.model.fit(states, target_qs, epochs=1, verbose=0, batch_size=batch_size)
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
@@ -97,8 +97,8 @@ if __name__ == "__main__":
     action_size = env.action_space.n
     agent = DQNAgent(state_size, action_size)
     BATCH_SIZE = 32
-    EPOCHS = 2  # 增加训练回合数
-    MAX_STEPS = 30
+    EPOCHS = 5  # 增加训练回合数
+    MAX_STEPS = 60
     REWARD_IF_DONE = -10
 
     # 训练阶段
