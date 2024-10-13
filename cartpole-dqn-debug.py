@@ -49,6 +49,25 @@ class DQN:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
+def test_agent(agent, env, episodes=10):
+    scores = []
+    for e in range(episodes):
+        state = env.reset()[0]
+        state = np.reshape(state, [1, state_size])
+        done = False
+        score = 0
+        while not done:
+            action = agent.act(state)
+            next_state, reward, done, _, _ = env.step(action)
+            next_state = np.reshape(next_state, [1, state_size])
+            state = next_state
+            score += 1
+            if done:
+                break
+        scores.append(score)
+        print(f"Test Episode: {e+1}/{episodes}, Score: {score}")
+    print(f"Average Score: {np.mean(scores)}")
+
 # 主程序
 if __name__ == "__main__":
     env = gym.make('CartPole-v1')
@@ -56,11 +75,13 @@ if __name__ == "__main__":
     action_size = env.action_space.n
     agent = DQN(state_size, action_size)
     batch_size = 32
+    epochs = 5  # 增加训练回合数
 
-    for e in range(500):  # 训练回合数
+    # 训练阶段
+    for e in range(epochs):
         state = env.reset()[0]
         state = np.reshape(state, [1, state_size])
-        for time in range(500):  # 每个回合的最大步数
+        for time in range(50):  # 每个回合的最大步数
             action = agent.act(state)
             next_state, reward, done, _, _ = env.step(action)
             reward = reward if not done else -10
@@ -72,3 +93,9 @@ if __name__ == "__main__":
                 break
             if len(agent.memory) > batch_size:
                 agent.replay(batch_size)
+
+    # 测试阶段
+    print("\nTesting the trained agent:")
+    test_agent(agent, env)
+
+    env.close()
