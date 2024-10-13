@@ -30,8 +30,8 @@ class DQNAgent:
         model.compile(loss='mse', optimizer=keras.optimizers.Adam(learning_rate=self.learning_rate))
         return model
 
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))
+    def remember(self, state, action, reward, next_state, terminated):
+        self.memory.append((state, action, reward, next_state, terminated))
 
     def act(self, state):
         if np.random.rand() <= self.epsilon:
@@ -72,17 +72,17 @@ def test_agent(agent, env, episodes=10):
     for e in range(episodes):
         state = env.reset()[0]
         state = np.reshape(state, [1, state_size])
-        done = False
+        terminated = False
         score = 0
         total_reward = 0
-        while not done:
+        while not terminated:
             action = agent.act(state)
-            next_state, reward, done, _, _ = env.step(action)
+            next_state, reward, terminated, _, info = env.step(action)
             next_state = np.reshape(next_state, [1, state_size])
             state = next_state
             score += 1
             total_reward += reward
-            if done:
+            if terminated:
                 break
         scores.append(score)
         total_rewards.append(total_reward)
@@ -107,14 +107,14 @@ if __name__ == "__main__":
         state = np.reshape(state, [1, state_size])
         for time in range(MAX_STEPS):  # 每个回合的最大步数
             action = agent.act(state)
-            next_state, reward, done, _, _ = env.step(action)
+            next_state, reward, terminated, truncated, info = env.step(action)
 
-            reward = reward if not done else REWARD_IF_DONE
+            reward = reward if not terminated else REWARD_IF_DONE
             
             next_state = np.reshape(next_state, [1, state_size])
-            agent.remember(state, action, reward, next_state, done)
+            agent.remember(state, action, reward, next_state, terminated)
             state = next_state
-            if done:
+            if terminated:
                 print(f"episode: {e}/{EPOCHS}, score: {time}, e: {agent.epsilon:.2}")
                 break
             if len(agent.memory) > BATCH_SIZE:
