@@ -72,7 +72,7 @@ def train(agent, env, episodes=1000, max_steps=500):
             actions.append(action)
             rewards.append(reward)
             next_states.append(next_state)
-            dones.append(done)
+            dones.append(float(done))  # Convert boolean to float
             old_probs.append(probs)
 
             episode_reward += reward
@@ -82,8 +82,14 @@ def train(agent, env, episodes=1000, max_steps=500):
                 break
 
         # Train after each episode
-        loss = agent.train_step(np.array(states), np.array(actions), np.array(rewards), 
-                                np.array(next_states), np.array(dones), np.array(old_probs))
+        loss = agent.train_step(
+            tf.convert_to_tensor(states, dtype=tf.float32),
+            tf.convert_to_tensor(actions, dtype=tf.int32),
+            tf.convert_to_tensor(rewards, dtype=tf.float32),
+            tf.convert_to_tensor(next_states, dtype=tf.float32),
+            tf.convert_to_tensor(dones, dtype=tf.float32),
+            tf.convert_to_tensor(old_probs, dtype=tf.float32)
+        )
 
         if episode % 10 == 0:
             print(f"Episode {episode}, Reward: {episode_reward}, Loss: {loss.numpy()}")
