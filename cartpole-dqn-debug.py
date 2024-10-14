@@ -36,7 +36,7 @@ class DQNAgent:
     def act(self, state):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
-        act_values = self.model.predict(state)
+        act_values = self.model.predict(state, verbose=0)
         return np.argmax(act_values[0])
 
     def replay(self, batch_size):
@@ -50,8 +50,8 @@ class DQNAgent:
         dones = np.array([t[4] for t in minibatch])
 
         # 预测当前状态和下一状态的 Q 值
-        target_qs = self.model.predict(states)
-        next_qs = self.model.predict(next_states)
+        target_qs = self.model.predict(states, verbose=0)
+        next_qs = self.model.predict(next_states, verbose=0)
 
         # 更新目标 Q 值
         for i in range(batch_size):
