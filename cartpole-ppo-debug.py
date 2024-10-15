@@ -18,6 +18,8 @@ class PPOAgent:
         x = keras.layers.Dense(64, activation='relu')(inputs)
         x = keras.layers.Dense(64, activation='relu')(x)
         outputs = keras.layers.Dense(self.action_dim, activation='softmax')(x)
+        #  intputs shape: (batch_size, state_dim)
+        #  outputs shape: (batch_size, action_dim)
         return keras.Model(inputs, outputs)
 
     def _build_critic(self):
@@ -26,11 +28,14 @@ class PPOAgent:
         x = keras.layers.Dense(64, activation='relu')(inputs)
         x = keras.layers.Dense(64, activation='relu')(x)
         outputs = keras.layers.Dense(1, activation=None)(x)
+        #  intputs shape: (batch_size, state_dim)
+        #  outputs shape: (batch_size, 1)   
         return keras.Model(inputs, outputs)
 
     def get_action(self, state):
         # PPO基于概率选择动作,而不是DQN中的ε-greedy策略
         probs = self.actor.predict(np.array([state]), verbose=0)[0]
+        # probs shape: (action_dim,)
         action = np.random.choice(self.action_dim, p=probs)
         return action, probs
 
@@ -38,7 +43,14 @@ class PPOAgent:
     def train_step(self, states, actions, rewards, next_states, dones, old_probs):
         with tf.GradientTape() as tape:
             # PPO使用优势函数和重要性采样比率,这在DQN中不存在
+            # states shape: (batch_size, state_dim)
+            # actions shape: (batch_size,)
+            # rewards shape: (batch_size,)
+            # next_states shape: (batch_size, state_dim)
+            # dones shape: (batch_size,)
+            # old_probs shape: (batch_size, action_dim) 
             new_probs = self.actor(states, training=True)
+            # new_probs shape: (batch_size, action_dim)
             advantages = rewards + 0.99 * self.critic(next_states) * (1 - dones) - self.critic(states)
             advantages = tf.stop_gradient(advantages)
             
@@ -51,7 +63,7 @@ class PPOAgent:
             clipped_ratio = tf.clip_by_value(ratio, 0.8, 1.2)
             actor_loss = -tf.reduce_mean(tf.minimum(ratio * advantages, clipped_ratio * advantages))
             
-            # Critic损失类似于DQN,但使用优势函数而不是TD误差
+            # Critic损失类似于DQN,都基于TD误差,但估计的是状态值而非Q值
             critic_value = self.critic(states, training=True)
             critic_loss = tf.reduce_mean(tf.square(rewards + 0.99 * self.critic(next_states) * (1 - dones) - critic_value))
             
