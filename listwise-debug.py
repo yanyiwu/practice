@@ -20,7 +20,8 @@ class ListWiseModel(tf.keras.Model):
 
 # 定义 ListWise 损失函数（这里使用简化版的 ListMLE）
 def listwise_loss(y_true, y_pred):
-    y_pred = tf.squeeze(y_pred, axis=-1)
+    # Remove the final dimension squeeze
+    # y_pred = tf.squeeze(y_pred, axis=-1)
     sorted_indices = tf.argsort(y_true, direction='DESCENDING')
     sorted_pred = tf.gather(y_pred, sorted_indices, batch_dims=1)
     return -tf.reduce_mean(tf.math.log_softmax(sorted_pred), axis=-1)
