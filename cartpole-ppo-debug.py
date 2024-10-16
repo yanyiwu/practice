@@ -64,8 +64,9 @@ class PPOAgent:
             actor_loss = -tf.reduce_mean(tf.minimum(ratio * advantages, clipped_ratio * advantages))
             
             # Critic损失类似于DQN,都基于TD误差,但估计的是状态值而非Q值
-            critic_value = self.critic(states, training=True)
-            critic_loss = tf.reduce_mean(tf.square(rewards + 0.99 * self.critic(next_states) * (1 - dones) - critic_value))
+            critic_value = self.critic(states)
+            next_critic_value = self.critic(next_states, training=False)  # 明确指定为 False
+            critic_loss = tf.reduce_mean(tf.square(rewards + 0.99 * next_critic_value * (1 - dones) - critic_value))
             
             # 总损失包括actor和critic损失
             loss = actor_loss + 0.5 * critic_loss
