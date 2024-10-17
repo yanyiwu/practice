@@ -53,14 +53,32 @@ class PPOAgent:
             # new_probs shape: (batch_size, action_dim)
             advantages = rewards + 0.99 * self.critic(next_states) * (1 - dones) - self.critic(states)
             advantages = tf.stop_gradient(advantages)
+            # advantages shape: (batch_size,)   
             
             actions_one_hot = tf.one_hot(actions, self.action_dim)
+            # actions_one_hot shape: (batch_size, action_dim)   
             new_responsible_outputs = tf.reduce_sum(new_probs * actions_one_hot, axis=1)
+            # new_responsible_outputs shape: (batch_size,)
             old_responsible_outputs = tf.reduce_sum(old_probs * actions_one_hot, axis=1)
+            # old_responsible_outputs shape: (batch_size,)
             
-            # PPO的核心:计算策略比率并裁剪
+            # 计算新旧策略的比率
             ratio = new_responsible_outputs / old_responsible_outputs
+
+            # 裁剪比率
             clipped_ratio = tf.clip_by_value(ratio, 0.8, 1.2)
+
+            # 计算 actor 损失（这里包含了 policy gradient 的核心思想）
+            # when advantage > 0:
+            #   if ratio > 1.2:
+            #       actor_loss = -tf.reduce_mean(clipped_ratio * advantages)
+            #   else:
+            #       actor_loss = -tf.reduce_mean(ratio * advantages)  
+            # when advantage < 0:
+            #   if ratio < 0.8:
+            #       actor_loss = -tf.reduce_mean(clipped_ratio * advantages)
+            #   else:
+            #       actor_loss = -tf.reduce_mean(ratio * advantages)    
             actor_loss = -tf.reduce_mean(tf.minimum(ratio * advantages, clipped_ratio * advantages))
             
             # Critic损失类似于DQN,都基于TD误差,但估计的是状态值而非Q值
