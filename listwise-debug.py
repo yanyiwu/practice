@@ -41,7 +41,9 @@ def listwise_loss(y_true, y_pred):
     sorted_indices = tf.argsort(y_true, direction='DESCENDING', axis=-1)
     sorted_pred = tf.gather(y_pred, sorted_indices, batch_dims=1)
     # sorted_pred shape: (num_queries, num_docs_per_query)
-    return -tf.reduce_mean(tf.math.log_softmax(sorted_pred), axis=-1)
+    loss = -tf.reduce_mean(tf.math.log_softmax(sorted_pred, axis=-1), axis=-1)
+    # loss shape: (num_queries,)
+    return loss
 
 # 主函数
 def main():
@@ -66,6 +68,7 @@ def main():
 
     # 使用模型进行预测
     predictions = model.predict(X_test[:5])
+    # predictions shape: (5, 10, 1) 
     print("Sample predictions shape:", predictions.shape)
     print("Sample predictions:")
     print(predictions)
