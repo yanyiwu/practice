@@ -17,7 +17,8 @@ class DiffusionModel(tf.keras.Model):
             layers.Conv2D(3, 3, padding='same')
         ])
 
-    def call(self, x, t):
+    def call(self, inputs):
+        x, t = inputs
         t = tf.cast(t, dtype=tf.int32)
         t_emb = tf.one_hot(t, self.num_steps)
         t_emb = tf.repeat(t_emb, repeats=self.img_size*self.img_size)
@@ -51,7 +52,7 @@ def main():
             t = tf.ones((batch_size,)) * step
             noise_factor = step / num_steps
             noisy_X = add_noise(X, noise_factor)
-            loss = model.train_on_batch(noisy_X, X)
+            loss = model.train_on_batch([noisy_X, t], X)
         print(f"Epoch {epoch+1}, Loss: {loss}")
 
     # 使用模型进行去噪
@@ -60,7 +61,7 @@ def main():
     
     for step in reversed(range(num_steps)):
         t = tf.ones((1,)) * step
-        prediction = model(noisy_test_X, t)
+        prediction = model([noisy_test_X, t])
         noisy_test_X = prediction
 
     print("Sample prediction shape:", prediction.shape)
