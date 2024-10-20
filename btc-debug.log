@@ -60,3 +60,49 @@ du -sh ~/.bitcoin/*
 73M     /home/yanyiwu/.bitcoin/signet
 55G     /home/yanyiwu/.bitcoin/testnet3
 0       /home/yanyiwu/.bitcoin/wallets
+
+
+du -sh ~/.bitcoin/*
+
+0       /home/yanyiwu/.bitcoin/anchors.dat
+0       /home/yanyiwu/.bitcoin/banlist.json
+16M     /home/yanyiwu/.bitcoin/blocks
+0       /home/yanyiwu/.bitcoin/chainstate
+12K     /home/yanyiwu/.bitcoin/debug.log
+244K    /home/yanyiwu/.bitcoin/fee_estimates.dat
+0       /home/yanyiwu/.bitcoin/mempool.dat
+56K     /home/yanyiwu/.bitcoin/peers.dat
+0       /home/yanyiwu/.bitcoin/settings.json
+73M     /home/yanyiwu/.bitcoin/signet
+120G    /home/yanyiwu/.bitcoin/testnet3
+0       /home/yanyiwu/.bitcoin/wallets
+
+
+cd src
+
+./bitcoin-cli -testnet createwallet "mywallet"
+
+{
+  "name": "mywallet"
+}
+
+vi ~/.bitcoin/bitcoin.conf
+
+testnet=1
+gen=1
+
+
+
+./bitcoin-cli -testnet setgenerate true 1
+
+./bitcoin-cli -testnet getnewaddress
+
+tb1qmy9ml5vk2xt5ug362d8cy5pnfgx8lkylkvryfj
+
+./bitcoin-cli -testnet generatetoaddress 1 tb1qmy9ml5vk2xt5ug362d8cy5pnfgx8lkylkvryfj
+
+
+while true; do
+    ./bitcoin-cli -testnet generatetoaddress 1 $(./bitcoin-cli -testnet getnewaddress) 1
+    sleep 1
+done
