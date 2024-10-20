@@ -11,11 +11,21 @@ class DiffusionModel(tf.keras.Model):
 
         self.model = tf.keras.Sequential([
             layers.Conv2D(32, 3, activation='relu', padding='same'),
+
+
             layers.Conv2D(64, 3, activation='relu', padding='same'),
+            # model shape: (32, 32, 32, 32) -> (32, 32, 32, 64)
+
             layers.Conv2D(64, 3, activation='relu', padding='same'),
+            # model shape: (32, 32, 32, 64) -> (32, 32, 32, 64)
+
             layers.Conv2D(32, 3, activation='relu', padding='same'),
+            # model shape: (32, 32, 32, 64) -> (32, 32, 32, 32)
+
             layers.Conv2D(3, 3, padding='same')
+            # model shape: (32, 32, 32, 32) -> (32, 32, 32, 3)  
         ])
+        # model shape: (32, 32, 32, 103) -> (32, 32, 32, 3) 
 
     def call(self, inputs):
         x, t = inputs
@@ -31,7 +41,9 @@ class DiffusionModel(tf.keras.Model):
         # t_emb shape: (32, 32, 32, 100)
         x_t = tf.concat([x, t_emb], axis=-1)
         # x_t shape: (32, 32, 32, 103)
-        return self.model(x_t)
+        r = self.model(x_t)
+        # r shape: (32, 32, 32, 3)  
+        return r
 
 # 添加噪声函数
 def add_noise(images, noise_factor):
