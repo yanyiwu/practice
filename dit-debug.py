@@ -36,18 +36,29 @@ class DITModel(tf.keras.Model):
         self.num_patches = num_patches
         self.d_model = d_model
 
+        # DIT 核心差异 1: 使用卷积层进行图像分块
+        # 普通 Diffusion Model 通常直接在像素级别上操作
+        # DIT 将图像分成补丁，类似于 Vision Transformer
         self.patch_embed = layers.Conv2D(d_model, kernel_size=patch_size, strides=patch_size)
+
+        # DIT 核心差异 2: 使用位置编码
+        # 这允许模型了解补丁在图像中的相对位置
         self.pos_embed = layers.Embedding(num_patches, d_model)
         
+        # DIT 核心差异 3: 使用 Transformer 编码器层
+        # 普通 Diffusion Model 通常使用 U-Net 架构
+        # Transformer 允许模型捕捉图像补丁之间的长距离依赖关系
         self.transformer_layers = [
             TransformerEncoderLayer(d_model, num_heads, dff)
             for _ in range(num_layers)
         ]
         
+        # 最终层将 Transformer 的输出转换回图像空间
         self.final_layer = layers.Dense(patch_size * patch_size * 3)  # 3 for RGB channels
 
     def build(self, input_shape):
-        # 实现 build 方法来创建变量
+        # DIT 核心差异 4: 时间嵌入
+        # 虽然普通 Diffusion Model 也使用时间信息，但 DIT 将其作为一个可学习的嵌入
         self.time_embed = self.add_weight(
             name="time_embed",
             shape=(1, 1, self.d_model),
@@ -61,22 +72,28 @@ class DITModel(tf.keras.Model):
         # x shape: (batch_size, img_size, img_size, 3)
         # t shape: (batch_size,)
         
+        # 将图像转换为补丁序列
         x = self.patch_embed(x)
         _, h, w, c = x.shape
         x = tf.reshape(x, (-1, h * w, c))
         
+        # 添加位置编码
         positions = tf.range(start=0, limit=self.num_patches, delta=1)
         pos_embed = self.pos_embed(positions)
         x = x + pos_embed
         
-        # 使用广播将时间嵌入添加到所有patch
+        # DIT 核心差异 5: 时间信息的注入方式
+        # 在 DIT 中，时间信息被添加到所有图像补丁中
+        # 这允许模型在每个补丁级别上考虑时间信息
         t = tf.expand_dims(tf.expand_dims(t, -1), -1)  # (batch_size, 1, 1)
         time_embed = t * self.time_embed  # (batch_size, 1, d_model)
         x = x + time_embed
         
+        # 通过 Transformer 层
         for layer in self.transformer_layers:
             x = layer(x, training=training)
         
+        # 将输出转换回图像空间
         x = self.final_layer(x)
         x = tf.reshape(x, (-1, self.img_size, self.img_size, 3))
         return x
@@ -96,7 +113,11 @@ def diffusion_schedule(t, start=0.0001, end=0.02):
 @tf.function
 def train_step(model, optimizer, images):
     batch_size = tf.shape(images)[0]
-    t = tf.random.uniform((batch_size,), minval=0, maxval=1)
+    
+    # 生成随机整数索引
+    t_indices = tf.random.uniform((batch_size,), minval=0, maxval=batch_size, dtype=tf.int32)
+    # 将索引映射到 [0, 1] 范围
+    t = tf.cast(t_indices, tf.float32) / tf.cast(batch_size - 1, tf.float32)
     
     noisy_images, noise = add_noise(images, t)
     
