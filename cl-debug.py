@@ -33,6 +33,7 @@ class ContrastiveLearning(tf.keras.Model):
         
         batch_size = tf.shape(z1)[0]
         contrastive_labels = tf.range(batch_size)
+        # contrastive_labels shape: [batch_size]
         
         # 核心思想3: 将问题转化为分类任务
         # 对角线元素（正样本对）应该有最大的相似度
