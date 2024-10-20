@@ -11,7 +11,7 @@ class DiffusionModel(tf.keras.Model):
 
         self.model = tf.keras.Sequential([
             layers.Conv2D(32, 3, activation='relu', padding='same'),
-
+            # model shape: (32, 32, 32, 103) -> (32, 32, 32, 32)  
 
             layers.Conv2D(64, 3, activation='relu', padding='same'),
             # model shape: (32, 32, 32, 32) -> (32, 32, 32, 64)
