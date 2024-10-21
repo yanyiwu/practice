@@ -9,11 +9,21 @@ class VAE(tf.keras.Model):
         # 核心思想: 编码器将输入压缩到低维潜在空间
         self.encoder = tf.keras.Sequential([
             layers.Input(shape=(28, 28, 1)),
+
             layers.Conv2D(32, 3, activation='relu', strides=2, padding='same'),
+            # (28, 28, 1) -> (14, 14, 32)   
+
             layers.Conv2D(64, 3, activation='relu', strides=2, padding='same'),
+            # (14, 14, 32) -> (7, 7, 64)
+
             layers.Flatten(),
+            # (7, 7, 64) -> (3136)
+
             layers.Dense(16, activation='relu'),
+            # (3136) -> (16)
+
             layers.Dense(latent_dim * 2)
+            # (16) -> (latent_dim * 2)  
         ])
 
         # 核心思想: 解码器从潜在空间重构输入
@@ -28,7 +38,7 @@ class VAE(tf.keras.Model):
 
     # 核心思想: 将输入编码为均值和对数方差
     def encode(self, x):
-        mean, logvar = tf.split(self.encoder(x), num_or_size_splits=2, axis=1)
+        mean, logvar = tf.split(self.encoder(x), num_or_size_splits=2, axis=-1)
         return mean, logvar
 
     # 核心思想: 重参数化技巧,使得反向传播可行
