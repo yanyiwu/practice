@@ -43,8 +43,13 @@ class VAE(tf.keras.Model):
 
     # 核心思想: 重参数化技巧,使得反向传播可行
     def reparameterize(self, mean, logvar):
+        # mean shape: (32, 2)
+        # logvar shape: (32, 2)
         eps = tf.random.normal(shape=mean.shape)
-        return eps * tf.exp(logvar * .5) + mean
+        # eps shape: (32, 2)
+        r = eps * tf.exp(logvar * .5) + mean
+        # r shape: (32, 2)
+        return r
 
     # 核心思想: 从潜在空间生成新样本
     def decode(self, z):
@@ -53,8 +58,12 @@ class VAE(tf.keras.Model):
     # 改进点: 可以考虑使用更复杂的编码器/解码器结构,如ResNet或Transformer
     def call(self, inputs):
         mean, logvar = self.encode(inputs)
+        # mean shape: (32, 2)   
+        # logvar shape: (32, 2)
         z = self.reparameterize(mean, logvar)
+        # z shape: (32, 2)  
         reconstructed = self.decode(z)
+        # reconstructed shape: (32, 28, 28, 1)
         return reconstructed, mean, logvar
 
 def compute_loss(model, x):
