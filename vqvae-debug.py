@@ -83,9 +83,7 @@ class VectorQuantizer(layers.Layer):
         # encodings shape: (batch_size, num_embeddings) 
         # 量化：用最近的码本向量替换输入向量
         quantized = tf.matmul(encodings, self.embeddings)
-
-        # 重塑量化后的向量，使其与输入形状匹配
-        quantized = tf.reshape(quantized, tf.shape(inputs))
+        # quantized shape: (batch_size, embedding_dim)
 
         # 计算损失
         # e_latent_loss：确保编码器输出接近码本向量
@@ -96,6 +94,8 @@ class VectorQuantizer(layers.Layer):
         vq_loss = q_latent_loss + tf.stop_gradient(e_latent_loss)
 
         # 使用直通估计器（straight-through estimator）来传递梯度
+        # forward: quantized = quantized
+        # backward: quantized = inputs  
         quantized = inputs + tf.stop_gradient(quantized - inputs)
         return quantized, vq_loss
 
@@ -129,7 +129,7 @@ x_test = x_test.reshape((x_test.shape[0], 28, 28, 1))
 # Model parameters
 latent_dim = 16
 num_embeddings = 64
-embedding_dim = 64
+embedding_dim = 128
 
 # Create and train model
 vqvae = VQVAE(latent_dim, num_embeddings, embedding_dim)
