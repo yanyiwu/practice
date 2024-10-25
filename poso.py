@@ -7,10 +7,10 @@ class POSO(keras.Model):
         super(POSO, self).__init__()
         self.num_modules = num_modules
         
-        # 门控网络
+        # Gate network
         self.gate = layers.Dense(num_modules, activation='softmax')
         
-        # 多个专家模块
+        # Expert modules
         self.modules = [
             keras.Sequential([
                 layers.Dense(hidden_dim, activation='relu'),
@@ -18,25 +18,49 @@ class POSO(keras.Model):
             ]) for _ in range(num_modules)
         ]
         
-        # 用户特征嵌入
+        # User feature embedding
         self.user_embedding = layers.Embedding(num_features, hidden_dim)
+        # num_features: 1000
+        # hidden_dim: 64
+        
+        # Add a dense layer for user features
+        self.user_dense = layers.Dense(hidden_dim)
         
     def call(self, inputs):
         user_features, item_features = inputs
+        # user_features shape: (batch_size, num_features)
+        # user_features shape: (32, 10)
+        # item_features shape: (batch_size, item_feature_dim)   
+        # item_features shape: (32, 20)
         
-        # 获取用户嵌入
+        # Get user embedding
         user_embed = self.user_embedding(user_features)
+        # user_embed shape: (32, num_user_features, 64)
+        
         user_embed = tf.reduce_mean(user_embed, axis=1)
+        # user_embed shape: (32, 64)
         
-        # 计算门控权重
-        gate_weights = self.gate(tf.concat([user_embed, user_features], axis=1))
+        # Process user features through dense layer
+        user_features_processed = self.user_dense(tf.cast(user_features, tf.float32))
+        # user_features_processed shape: (batch_size, hidden_dim)
+        # user_features_processed shape: (32, 64)
         
-        # 每个模块的输出
+        # Calculate gate weights
+        gate_weights = self.gate(tf.concat([user_embed, user_features_processed], axis=1))
+        # gate_weights shape: (batch_size, num_modules)
+        # gate_weights shape: (32, 5)
+        
+        # Output of each module
         module_outputs = [module(item_features) for module in self.modules]
+        # module_outputs 是一个列表，长度为 5
+        # 每个元素的形状是 (32, 1)
         
-        # 加权组合模块输出
-        final_output = tf.stack(module_outputs, axis=1)
+        # Weighted combination of module outputs
+        final_output = tf.stack(module_outputs, axis=1) 
+        # final_output shape: (32, 5, 1)
+        
         final_output = tf.reduce_sum(final_output * tf.expand_dims(gate_weights, -1), axis=1)
+        # final_output shape: (32, 1)
         
         return final_output
 
@@ -61,6 +85,7 @@ model.fit([user_features, item_features], labels, epochs=5, batch_size=32, valid
 # 评估模型
 test_loss, test_acc = model.evaluate([user_features, item_features], labels, verbose=2)
 print(f'\nTest accuracy: {test_acc}')
+
 
 
 
