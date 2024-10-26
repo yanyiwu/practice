@@ -39,15 +39,16 @@ class MINDModel(keras.Model):
         self.user_embedding = layers.Embedding(num_users, embedding_dim)
         self.item_embedding = layers.Embedding(num_items, embedding_dim)
 
-        # Multi-interest extraction
-        self.interest_extractor = layers.LSTM(embedding_dim, return_sequences=True)
-        # interest_extractor: (batch_size, seq_length, embedding_dim) -> (batch_size, seq_length, embedding_dim)
-
-
-
+        # 将 LSTM 替换为 MultiHeadAttention 用于兴趣提取
+        self.interest_extractor = layers.MultiHeadAttention(
+            num_heads=4
+        )
         
-        self.interest_evolving = layers.MultiHeadAttention(num_heads=1, key_dim=embedding_dim)
-        # interest_evolving: (batch_size, 1, embedding_dim) -> (batch_size, 1, embedding_dim)
+        # 保持原有的 MultiHeadAttention 用于兴趣演化
+        self.interest_evolving = layers.MultiHeadAttention(num_heads=1)
+
+        # 位置编码层
+        self.positional_encoding = layers.Embedding(input_dim=1000, output_dim=embedding_dim)  # 假设最大序列长度为1000
 
         # Capsule network for interest clustering
         self.capsule_network = SimpleCapsule(max_interests, embedding_dim)
@@ -66,19 +67,27 @@ class MINDModel(keras.Model):
         history_emb = self.item_embedding(user_history)
         # history_emb: (batch_size, seq_length, embedding_dim)
 
+        # Add position encoding
+        positions = tf.range(start=0, limit=tf.shape(user_history)[1], delta=1)
+        # positions: (seq_length,)  
+        positional_encodings = self.positional_encoding(positions)
+        # positional_encodings: (seq_length, embedding_dim)
+        history_emb = history_emb + positional_encodings
+        # history_emb: (batch_size, seq_length, embedding_dim)
+
         # Extract multiple interests
-        # 1. Use LSTM to extract interest features from user history
-        interest_features = self.interest_extractor(history_emb)
+        # 1. Use MultiHeadAttention to extract interest features from user history
+        interest_features = self.interest_extractor(
+            query=history_emb,
+            key=history_emb,
+            value=history_emb
+        )
         # interest_features: (batch_size, seq_length, embedding_dim)
         
         # Evolve interests using MultiHeadAttention
         q = tf.expand_dims(user_emb, axis=1)
         # q: (batch_size, 1, embedding_dim)
-        k = v = interest_features
-        # k: (batch_size, seq_length, embedding_dim)
-        # v: (batch_size, seq_length, embedding_dim)
-        evolved_interests = self.interest_evolving(query=q, key=k, value=v)
-        # evolved_interests: (batch_size, 1, embedding_dim)
+        evolved_interests = self.interest_evolving(query=q, key=interest_features, value=interest_features)
         evolved_interests = tf.squeeze(evolved_interests, axis=1)
         # evolved_interests: (batch_size, embedding_dim)
 
@@ -105,7 +114,7 @@ EMBEDDING_DIM = 64
 MAX_INTERESTS = 5
 NUM_SAMPLED_INTERESTS = 3
 BATCH_SIZE = 256
-EPOCHS = 5
+EPOCHS = 1
 
 # Create and compile the model
 model = MINDModel(NUM_USERS, NUM_ITEMS, EMBEDDING_DIM, MAX_INTERESTS, NUM_SAMPLED_INTERESTS)
