@@ -42,6 +42,10 @@ class MINDModel(keras.Model):
         # Multi-interest extraction
         self.interest_extractor = layers.LSTM(embedding_dim, return_sequences=True)
         # interest_extractor: (batch_size, seq_length, embedding_dim) -> (batch_size, seq_length, embedding_dim)
+
+
+
+        
         self.interest_evolving = layers.MultiHeadAttention(num_heads=1, key_dim=embedding_dim)
         # interest_evolving: (batch_size, 1, embedding_dim) -> (batch_size, 1, embedding_dim)
 
@@ -71,7 +75,10 @@ class MINDModel(keras.Model):
         q = tf.expand_dims(user_emb, axis=1)
         # q: (batch_size, 1, embedding_dim)
         k = v = interest_features
+        # k: (batch_size, seq_length, embedding_dim)
+        # v: (batch_size, seq_length, embedding_dim)
         evolved_interests = self.interest_evolving(query=q, key=k, value=v)
+        # evolved_interests: (batch_size, 1, embedding_dim)
         evolved_interests = tf.squeeze(evolved_interests, axis=1)
         # evolved_interests: (batch_size, embedding_dim)
 
