@@ -18,7 +18,7 @@ class MINDModel(keras.Model):
 
         # Multi-interest extraction
         self.interest_extractor = layers.LSTM(embedding_dim, return_sequences=True)
-        self.interest_evolving = layers.Attention()
+        self.interest_evolving = layers.MultiHeadAttention(num_heads=1, key_dim=embedding_dim)
 
         # Capsule network for interest clustering
         self.capsule_network = layers.Dense(max_interests * embedding_dim)
@@ -31,16 +31,36 @@ class MINDModel(keras.Model):
         
         # Embed users and items
         user_emb = self.user_embedding(user_ids)
+        # user_emb: (batch_size, embedding_dim)
         item_emb = self.item_embedding(item_ids)
+        # item_emb: (batch_size, embedding_dim)
         history_emb = self.item_embedding(user_history)
+        # history_emb: (batch_size, seq_length, embedding_dim)
 
         # Extract multiple interests
         interest_features = self.interest_extractor(history_emb)
-        evolved_interests = self.interest_evolving([interest_features, user_emb])
+        # interest_features: (batch_size, seq_length, embedding_dim)
+        # Evolve interests using MultiHeadAttention
+        q = tf.expand_dims(user_emb, axis=1)
+        # q: (batch_size, 1, embedding_dim)
+        k = interest_features
+        # k: (batch_size, seq_length, embedding_dim)
+        v = interest_features
+        # v: (batch_size, seq_length, embedding_dim)
+        evolved_interests = self.interest_evolving(
+            query=q,
+            key=k,
+            value=v
+        )
+        # evolved_interests: (batch_size, 1, embedding_dim)
+        evolved_interests = tf.squeeze(evolved_interests, axis=1)
+        # evolved_interests: (batch_size, embedding_dim)
 
         # Cluster interests using capsule network
         capsule_output = self.capsule_network(evolved_interests)
+        # capsule_output: (batch_size, max_interests * embedding_dim)
         interest_capsules = tf.reshape(capsule_output, [-1, self.max_interests, self.embedding_dim])
+        # interest_capsules: (batch_size, max_interests, embedding_dim)
 
         # Label-aware attention
         attention_scores = self.label_attention(interest_capsules * item_emb[:, tf.newaxis, :])
