@@ -115,9 +115,11 @@ class MINDModel(keras.Model):
         
         # 使用权重聚合用户兴趣
         user_representation = tf.reduce_sum(attention_weights * capsule_output, axis=1)
+        # user_representation: (batch_size, embedding_dim)
 
         # Compute final score
         scores = tf.reduce_sum(user_representation * item_emb, axis=-1)
+        # scores: (batch_size,)
         return scores
 
 # Hyperparameters
