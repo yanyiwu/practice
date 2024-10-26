@@ -3,6 +3,29 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
 
+class SimpleCapsule(layers.Layer):
+    def __init__(self, num_capsules, dim_capsules):
+        super(SimpleCapsule, self).__init__()
+        self.num_capsules = num_capsules
+        self.dim_capsules = dim_capsules
+        self.W = self.add_weight(shape=(num_capsules, dim_capsules, dim_capsules),
+                                 initializer='glorot_uniform',
+                                 name='W')
+
+    def call(self, inputs):
+        # inputs shape: (batch_size, dim_capsules)
+        u = tf.expand_dims(inputs, axis=1)  # (batch_size, 1, dim_capsules)
+        u = tf.tile(u, [1, self.num_capsules, 1])  # (batch_size, num_capsules, dim_capsules)
+        
+        # Simple routing: just apply the transformation
+        s = tf.einsum('bni,nij->bnj', u, self.W)
+        
+        # Apply squash activation
+        squared_norm = tf.reduce_sum(tf.square(s), axis=-1, keepdims=True)
+        scale = squared_norm / (1 + squared_norm) / tf.sqrt(squared_norm + 1e-8)
+        v = scale * s
+        return v
+
 class MINDModel(keras.Model):
     def __init__(self, num_users, num_items, embedding_dim, max_interests, num_sampled_interests):
         super(MINDModel, self).__init__()
@@ -18,11 +41,13 @@ class MINDModel(keras.Model):
 
         # Multi-interest extraction
         self.interest_extractor = layers.LSTM(embedding_dim, return_sequences=True)
+        # interest_extractor: (batch_size, seq_length, embedding_dim) -> (batch_size, seq_length, embedding_dim)
         self.interest_evolving = layers.MultiHeadAttention(num_heads=1, key_dim=embedding_dim)
+        # interest_evolving: (batch_size, 1, embedding_dim) -> (batch_size, 1, embedding_dim)
 
         # Capsule network for interest clustering
-        self.capsule_network = layers.Dense(max_interests * embedding_dim)
-
+        self.capsule_network = SimpleCapsule(max_interests, embedding_dim)
+        # capsule_network: (batch_size, embedding_dim) -> (batch_size, max_interests, embedding_dim)
         # Label-aware attention
         self.label_attention = layers.Dense(1)
 
@@ -38,36 +63,29 @@ class MINDModel(keras.Model):
         # history_emb: (batch_size, seq_length, embedding_dim)
 
         # Extract multiple interests
+        # 1. Use LSTM to extract interest features from user history
         interest_features = self.interest_extractor(history_emb)
         # interest_features: (batch_size, seq_length, embedding_dim)
+        
         # Evolve interests using MultiHeadAttention
         q = tf.expand_dims(user_emb, axis=1)
         # q: (batch_size, 1, embedding_dim)
-        k = interest_features
-        # k: (batch_size, seq_length, embedding_dim)
-        v = interest_features
-        # v: (batch_size, seq_length, embedding_dim)
-        evolved_interests = self.interest_evolving(
-            query=q,
-            key=k,
-            value=v
-        )
-        # evolved_interests: (batch_size, 1, embedding_dim)
+        k = v = interest_features
+        evolved_interests = self.interest_evolving(query=q, key=k, value=v)
         evolved_interests = tf.squeeze(evolved_interests, axis=1)
         # evolved_interests: (batch_size, embedding_dim)
 
         # Cluster interests using capsule network
+        # 3. Use capsule network to cluster interests
         capsule_output = self.capsule_network(evolved_interests)
-        # capsule_output: (batch_size, max_interests * embedding_dim)
-        interest_capsules = tf.reshape(capsule_output, [-1, self.max_interests, self.embedding_dim])
-        # interest_capsules: (batch_size, max_interests, embedding_dim)
+        # capsule_output shape: (batch_size, max_interests, embedding_dim)
 
         # Label-aware attention
-        attention_scores = self.label_attention(interest_capsules * item_emb[:, tf.newaxis, :])
+        attention_scores = self.label_attention(capsule_output * item_emb[:, tf.newaxis, :])
         attention_weights = tf.nn.softmax(attention_scores, axis=1)
         
         # Aggregate user interests
-        user_representation = tf.reduce_sum(attention_weights * interest_capsules, axis=1)
+        user_representation = tf.reduce_sum(attention_weights * capsule_output, axis=1)
 
         # Compute final score
         scores = tf.reduce_sum(user_representation * item_emb, axis=-1)
