@@ -19,11 +19,15 @@ class SimpleCapsule(layers.Layer):
         
         # Simple routing: just apply the transformation
         s = tf.einsum('bni,nij->bnj', u, self.W)
+        # s: (batch_size, num_capsules, dim_capsules)   
         
         # Apply squash activation
         squared_norm = tf.reduce_sum(tf.square(s), axis=-1, keepdims=True)
+        # squared_norm: (batch_size, num_capsules, 1)   
         scale = squared_norm / (1 + squared_norm) / tf.sqrt(squared_norm + 1e-8)
+        # scale: (batch_size, num_capsules, 1)
         v = scale * s
+        # v: (batch_size, num_capsules, dim_capsules)
         return v
 
 class MINDModel(keras.Model):
