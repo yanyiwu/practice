@@ -58,7 +58,8 @@ class MINDModel(keras.Model):
         self.capsule_network = SimpleCapsule(max_interests, embedding_dim)
         # capsule_network: (batch_size, embedding_dim) -> (batch_size, max_interests, embedding_dim)
         # Label-aware attention
-        self.label_attention = layers.Dense(1)
+        self.interest_scorer = layers.Dense(1)
+        # interest_scorer: 用于计算每个兴趣向量与目标物品的相关性分数
 
     def call(self, inputs):
         user_ids, item_ids, user_history = inputs
@@ -100,11 +101,19 @@ class MINDModel(keras.Model):
         capsule_output = self.capsule_network(evolved_interests)
         # capsule_output shape: (batch_size, max_interests, embedding_dim)
 
-        # Label-aware attention
-        attention_scores = self.label_attention(capsule_output * item_emb[:, tf.newaxis, :])
-        attention_weights = tf.nn.softmax(attention_scores, axis=1)
+        # 计算兴趣向量与目标物品的相关性分数
+        s = tf.expand_dims(item_emb, axis=1)
+        # s: (batch_size, 1, embedding_dim)
+        s = capsule_output * s
+        # s: (batch_size, max_interests, embedding_dim)
+        relevance_scores = self.interest_scorer(s)
+        # relevance_scores: (batch_size, max_interests, 1)
+
+        # 使用 softmax 将分数转换为权重
+        attention_weights = tf.nn.softmax(relevance_scores, axis=1)
+        # attention_weights: (batch_size, max_interests, 1) 
         
-        # Aggregate user interests
+        # 使用权重聚合用户兴趣
         user_representation = tf.reduce_sum(attention_weights * capsule_output, axis=1)
 
         # Compute final score
