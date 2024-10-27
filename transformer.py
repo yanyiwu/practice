@@ -29,13 +29,22 @@ def create_look_ahead_mask(size):
     return mask
 
 def scaled_dot_product_attention(q, k, v, mask):
+    # q shape: (batch_size, num_heads, seq_len_q, depth)
+    # k shape: (batch_size, num_heads, seq_len_k, depth)
+    # v shape: (batch_size, num_heads, seq_len_v, depth)    
     matmul_qk = tf.matmul(q, k, transpose_b=True)
+    # matmul_qk shape: (batch_size, num_heads, seq_len_q, seq_len_k)
     dk = tf.cast(tf.shape(k)[-1], tf.float32)
+    # dk shape: depth
     scaled_attention_logits = matmul_qk / tf.math.sqrt(dk)
+    # scaled_attention_logits shape: (batch_size, num_heads, seq_len_q, seq_len_k)
     if mask is not None:
         scaled_attention_logits += (mask * -1e9)  
+    # scaled_attention_logits shape: (batch_size, num_heads, seq_len_q, seq_len_k)
     attention_weights = tf.nn.softmax(scaled_attention_logits, axis=-1)
+    # attention_weights shape: (batch_size, num_heads, seq_len_q, seq_len_k)
     output = tf.matmul(attention_weights, v)
+    # output shape: (batch_size, num_heads, seq_len_q, depth)
     return output, attention_weights
 
 def point_wise_feed_forward_network(d_model, dff):
@@ -58,21 +67,37 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         self.dense = tf.keras.layers.Dense(d_model)
 
     def split_heads(self, x, batch_size):
+        # x shape: (batch_size, seq_len, d_model)   
         x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
-        return tf.transpose(x, perm=[0, 2, 1, 3])
+        # x shape: (batch_size, seq_len, num_heads,depth)
+        x = tf.transpose(x, perm=[0, 2, 1, 3])
+        # x shape: (batch_size, num_heads, seq_len, depth)  
+        return x
 
     def call(self, v, k, q, mask):
         batch_size = tf.shape(q)[0]
+        # q shape: (batch_size, seq_len, d_model)
         q = self.wq(q)
+        # q shape: (batch_size, seq_len, d_model)
         k = self.wk(k)
+        # k shape: (batch_size, seq_len, d_model)
         v = self.wv(v)
+        # v shape: (batch_size, seq_len, d_model)
         q = self.split_heads(q, batch_size)
+        # q shape: (batch_size, num_heads, seq_len_q, depth)
         k = self.split_heads(k, batch_size)
+        # k shape: (batch_size, num_heads, seq_len_k, depth)
         v = self.split_heads(v, batch_size)
+        # v shape: (batch_size, num_heads, seq_len_v, depth)
         scaled_attention, attention_weights = scaled_dot_product_attention(q, k, v, mask)
+        # scaled_attention shape: (batch_size, num_heads, seq_len_q, depth)
+        # attention_weights shape: (batch_size, num_heads, seq_len_q, seq_len_k)
         scaled_attention = tf.transpose(scaled_attention, perm=[0, 2, 1, 3])
+        # scaled_attention shape: (batch_size, seq_len_q, num_heads, depth)
         concat_attention = tf.reshape(scaled_attention, (batch_size, -1, self.d_model))
+        # concat_attention shape: (batch_size, seq_len_q, d_model)
         output = self.dense(concat_attention)
+        # output shape: (batch_size, seq_len_q, d_model)
         return output, attention_weights
 
 class EncoderLayer(tf.keras.layers.Layer):
