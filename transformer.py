@@ -17,8 +17,12 @@ def positional_encoding(position, d_model):
     return tf.cast(pos_encoding, dtype=tf.float32)
 
 def create_padding_mask(seq):
+    # seq shape: (batch_size, seq_len)
     seq = tf.cast(tf.math.equal(seq, 0), tf.float32)
-    return seq[:, tf.newaxis, tf.newaxis, :]
+    # seq shape: (batch_size, seq_len)
+    r = seq[:, tf.newaxis, tf.newaxis, :]
+    # r shape: (batch_size, 1, 1, seq_len)
+    return r
 
 def create_look_ahead_mask(size):
     mask = 1 - tf.linalg.band_part(tf.ones((size, size)), -1, 0)
@@ -82,12 +86,19 @@ class EncoderLayer(tf.keras.layers.Layer):
         self.dropout2 = tf.keras.layers.Dropout(rate)
 
     def call(self, x, training, mask):
+        # x shape: (batch_size, input_seq_len, d_model)
         attn_output, _ = self.mha(x, x, x, mask)
+        # attn_output shape: (batch_size, input_seq_len, d_model)
         attn_output = self.dropout1(attn_output, training=training)
+        # attn_output shape: (batch_size, input_seq_len, d_model)
         out1 = self.layernorm1(x + attn_output)
-        ffn_output = self.ffn(out1)
+        # out1 shape: (batch_size, input_seq_len, d_model)
+        ffn_output = self.ffn(out1) 
+        # ffn_output shape: (batch_size, input_seq_len, d_model)
         ffn_output = self.dropout2(ffn_output, training=training)
+        # ffn_output shape: (batch_size, input_seq_len, d_model)
         out2 = self.layernorm2(out1 + ffn_output)
+        # out2 shape: (batch_size, input_seq_len, d_model)
         return out2
 
 class DecoderLayer(tf.keras.layers.Layer):
@@ -126,13 +137,20 @@ class Encoder(tf.keras.layers.Layer):
         self.dropout = tf.keras.layers.Dropout(rate)
 
     def call(self, x, training=None, mask=None):
+        # x shape: (batch_size, input_seq_len)
         seq_len = tf.shape(x)[1]
+        # seq_len shape: input_seq_len
         x = self.embedding(x)
+        # x shape: (batch_size, input_seq_len, d_model) 
         x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
+        # x shape: (batch_size, input_seq_len, d_model) 
         x += self.pos_encoding[:, :seq_len, :]
+        # x shape: (batch_size, input_seq_len, d_model)
         x = self.dropout(x, training=training)
+        # x shape: (batch_size, input_seq_len, d_model)
         for i in range(self.num_layers):
             x = self.enc_layers[i](x, training=training, mask=mask)
+        # x shape: (batch_size, input_seq_len, d_model)
         return x
 
 class Decoder(tf.keras.layers.Layer):
@@ -172,29 +190,47 @@ class TransformerModel(keras.Model):
 
     def call(self, inputs, training=None, mask=None):
         inp, tar = inputs
+        # inp shape: (batch_size, input_seq_len)
+        # tar shape: (batch_size, target_seq_len)   
 
         enc_padding_mask = create_padding_mask(inp)
-        dec_padding_mask = create_padding_mask(inp)
-        look_ahead_mask = create_look_ahead_mask(tf.shape(tar)[1])
-        dec_target_padding_mask = create_padding_mask(tar)
-        combined_mask = tf.maximum(dec_target_padding_mask, look_ahead_mask)
-
+        # enc_padding_mask shape: (batch_size, 1, 1, input_seq_len)
         enc_output = self.encoder(inp, training=training, mask=enc_padding_mask)
+        # enc_output shape: (batch_size, input_seq_len, d_model)
+
+        dec_padding_mask = create_padding_mask(inp)
+        # dec_padding_mask shape: (batch_size, 1, 1, input_seq_len)
+
+        look_ahead_mask = create_look_ahead_mask(tf.shape(tar)[1])
+        # look_ahead_mask shape: (target_seq_len, target_seq_len)
+        dec_target_padding_mask = create_padding_mask(tar)
+        # dec_target_padding_mask shape: (batch_size, 1, 1, target_seq_len)
+        combined_mask = tf.maximum(dec_target_padding_mask, look_ahead_mask)
         dec_output, _ = self.decoder(tar, enc_output, training=training, 
                                      look_ahead_mask=combined_mask, 
                                      padding_mask=dec_padding_mask)
+        # dec_output shape: (batch_size, target_seq_len, d_model)
         final_output = self.final_layer(dec_output)
+        # final_output shape: (batch_size, target_seq_len, target_vocab_size)
         return final_output
 
 # 最后是演示函数
 def demo_transformer():
+    # Transformer模型的层数
     num_layers = 4
+    # 模型的维度，表示词嵌入的大小和模型内部表示的维度
     d_model = 128
+    # 多头注意力机制中的头数
     num_heads = 8
+    # 前馈神经网络的隐藏层大小
     dff = 512
+    # 输入词汇表大小
     input_vocab_size = 8000
+    # 输出词汇表大小
     target_vocab_size = 8000
+    # 输入序列的最大位置编码长度
     pe_input = 10000
+    # 输出序列的最大位置编码长度
     pe_target = 6000
 
     transformer = TransformerModel(num_layers, d_model, num_heads, dff,
@@ -202,7 +238,9 @@ def demo_transformer():
                                    pe_input, pe_target)
 
     temp_input = tf.random.uniform((64, 62), dtype=tf.int32, maxval=input_vocab_size)
+    # temp_input shape: (batch_size, input_seq_len) 
     temp_target = tf.random.uniform((64, 26), dtype=tf.int32, maxval=target_vocab_size)
+    # temp_target shape: (batch_size, target_seq_len)
 
     inputs = (temp_input, temp_target)
 
