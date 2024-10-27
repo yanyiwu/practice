@@ -11,23 +11,30 @@ class GraphConvLayer(keras.layers.Layer):
         self.activation = activation
 
     def build(self, input_shape):
+        # input_shape shape: (num_nodes, num_features)  
         self.weight = self.add_weight(
             shape=(input_shape[-1], self.units),
             initializer='glorot_uniform',
             name='weight'
         )
+        # self.weight shape: (num_features, units)  
         self.bias = self.add_weight(
             shape=(self.units,),
             initializer='zeros',
             name='bias'
         )
+        # self.bias shape: (units,)  
 
     def call(self, inputs, adj_matrix):
         # 图卷积操作: H = σ(AXW + b)
         # A: 邻接矩阵, X: 节点特征, W: 权重矩阵, b: 偏置
+        # inputs shape: (num_nodes, num_features)
         support = tf.matmul(inputs, self.weight)
+        # support shape: (num_nodes, units)
         output = tf.matmul(adj_matrix, support)
+        # output shape: (num_nodes, units)
         output = output + self.bias
+        # output shape: (num_nodes, units)
         return self.activation(output) if self.activation else output
 
 # 创建GNN模型
@@ -39,9 +46,15 @@ class GNNModel(keras.Model):
         self.dropout = keras.layers.Dropout(0.5)
 
     def call(self, inputs, adj_matrix, training=False):
+        # inputs shape: (num_nodes, num_features)   
+        # adj_matrix shape: (num_nodes, num_nodes)
         x = self.gc1(inputs, adj_matrix)
+        # x shape: (num_nodes, 16)  
         x = self.dropout(x, training=training)
-        return self.gc2(x, adj_matrix)
+        # x shape: (num_nodes, 16)  
+        r = self.gc2(x, adj_matrix)
+        # r shape: (num_nodes, num_classes) 
+        return r
 
 # 生成示例数据
 num_nodes = 100
@@ -50,8 +63,11 @@ num_classes = 7
 
 # 随机生成节点特征和邻接矩阵
 node_features = np.random.randn(num_nodes, num_features).astype(np.float32)
+# node_features shape: (num_nodes, num_features)    
 adj_matrix = np.random.randint(0, 2, (num_nodes, num_nodes)).astype(np.float32)
+# adj_matrix shape: (num_nodes, num_nodes)
 labels = np.random.randint(0, num_classes, num_nodes)
+# labels shape: (num_nodes,)
 
 # 创建和编译模型
 model = GNNModel(num_classes)
