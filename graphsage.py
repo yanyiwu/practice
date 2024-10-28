@@ -24,10 +24,14 @@ class SAGEConv(keras.layers.Layer):
         )
 
     def aggregate(self, neighbor_features, adj_matrix):
+        # neighbor_features shape: (1, num_nodes, num_features)
+        # adj_matrix shape: (1, num_nodes, num_nodes)   
         if self.aggregator_type == 'mean':
             # Use the adjacency matrix for weighted aggregation
             neighbor_sum = tf.matmul(adj_matrix, neighbor_features)
+            # neighbor_sum shape: (1, num_nodes, num_features)
             neighbor_count = tf.reduce_sum(adj_matrix, axis=-1, keepdims=True)
+            # neighbor_count shape: (1, num_nodes, 1)
             return neighbor_sum / (neighbor_count + 1e-6)  # Add epsilon to avoid division by zero
         elif self.aggregator_type == 'max':
             return tf.reduce_max(neighbor_features, axis=1)
@@ -36,9 +40,14 @@ class SAGEConv(keras.layers.Layer):
 
     def call(self, inputs, adj_matrix):
         self_features, neighbor_features = inputs
+        # self_features shape: (1, num_nodes, num_features) 
+        # neighbor_features shape: (1, num_nodes, num_features)
         aggregated = self.aggregate(neighbor_features, adj_matrix)
+        # aggregated shape: (1, num_nodes, num_features)
         combined = self_features + aggregated
+        # combined shape: (1, num_nodes, num_features)
         output = tf.matmul(combined, self.weight) + self.bias
+        # output shape: (1, num_nodes, num_features)
         return tf.nn.relu(output)
 
 class GraphSAGE(keras.Model):
@@ -50,9 +59,13 @@ class GraphSAGE(keras.Model):
 
     def call(self, inputs):
         x, adj_matrix = inputs
+        # x shape: (1, num_nodes, num_features)
+        # adj_matrix shape: (1, num_nodes, num_nodes)
         for layer in self.sage_layers:
             neighbor_features = x
+            # neighbor_features shape: (1, num_nodes, num_features) 
             x = layer((x, neighbor_features), adj_matrix)
+            # x shape: (1, num_nodes, num_features)
         return x
 
 # Demo
@@ -82,8 +95,9 @@ def graphsage_demo():
         tf.expand_dims(node_features, 0),  # Add batch dimension
         tf.expand_dims(adj_matrix, 0)  # Add batch dimension
     )
+    # inputs shape: [(1, num_nodes, num_features), (1, num_nodes, num_nodes)]
     labels_tensor = tf.expand_dims(labels, 0)  # Add batch dimension
-
+    # labels_tensor shape: (1, num_nodes)
     # Train model
     for epoch in range(10):
         loss, accuracy = model.train_on_batch(inputs, labels_tensor)
