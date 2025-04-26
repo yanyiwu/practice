@@ -22,3 +22,4 @@ venv*
 api_key.txt
 audio2text/your_audio.mp3
 audio2text/output.srt
+audio2text/1
