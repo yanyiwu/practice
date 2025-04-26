@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find required packages
 find_package(CURL REQUIRED)
+find_package(LibArchive REQUIRED)
 
 # Add source files
 set(TRANSFORMER_SOURCES
@@ -32,11 +33,13 @@ target_link_libraries(run_benchmarks
     PRIVATE 
     transformer
     CURL::libcurl
+    ${LibArchive_LIBRARIES}
 )
 target_include_directories(run_benchmarks 
     PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmark
+    ${LibArchive_INCLUDE_DIRS}
 )
 
 # Enable optimization

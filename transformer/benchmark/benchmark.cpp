@@ -66,13 +66,15 @@ void IWSLT14Benchmark::load_dataset() {
     
     if (!std::filesystem::exists(targz_file)) {
         std::cout << "Downloading IWSLT14 dataset..." << std::endl;
-        if (!download_file(dataset_url, targz_file)) {
+        if (!utils::download_file(dataset_url, targz_file, 
+            [](float p, const std::string& msg) { utils::print_progress(p, "IWSLT14 Download"); })) {
             std::cerr << "Failed to download IWSLT14 dataset" << std::endl;
             return;
         }
         
         std::cout << "Extracting IWSLT14 dataset..." << std::endl;
-        if (!utils::extract_targz(targz_file, dataset_path)) {
+        if (!utils::extract_targz(targz_file, dataset_path,
+            [](float p, const std::string& msg) { utils::print_progress(p, "IWSLT14 Extract"); })) {
             std::cerr << "Failed to extract IWSLT14 dataset" << std::endl;
             return;
         }
@@ -91,31 +93,39 @@ void IWSLT14Benchmark::load_dataset() {
     auto en_lines = utils::read_lines(test_en);
     
     size_t num_samples = std::min(de_lines.size(), en_lines.size());
+    std::cout << "Processing IWSLT14 test pairs..." << std::endl;
     for (size_t i = 0; i < num_samples; ++i) {
         Matrix input = {utils::tokenize(de_lines[i])};
         Matrix target = {utils::tokenize(en_lines[i])};
         test_pairs.push_back(std::make_pair(input, target));
+        
+        utils::print_progress(static_cast<float>(i + 1) / num_samples, "IWSLT14 Processing");
     }
     
-    std::cout << "Loaded " << test_pairs.size() << " test pairs" << std::endl;
+    std::cout << "Loaded " << test_pairs.size() << " IWSLT14 test pairs" << std::endl;
 }
 
 void IWSLT14Benchmark::run(Transformer& model) {
     float total_bleu = 0.0f;
+    size_t num_pairs = test_pairs.size();
     
-    for (const auto& pair : test_pairs) {
+    std::cout << "\nRunning IWSLT14 benchmark..." << std::endl;
+    for (size_t i = 0; i < num_pairs; ++i) {
+        const auto& pair = test_pairs[i];
         auto output = model.forward(pair.first);
         
         // Compute BLEU score for this sample
         float bleu = 0.0f;
-        for (size_t i = 0; i < output.size(); ++i) {
-            bleu += compute_bleu_score(output[i], pair.second[i]);
+        for (size_t j = 0; j < output.size(); ++j) {
+            bleu += compute_bleu_score(output[j], pair.second[j]);
         }
         bleu /= output.size();
         total_bleu += bleu;
+        
+        utils::print_progress(static_cast<float>(i + 1) / num_pairs, "IWSLT14 Evaluation");
     }
     
-    accuracy = total_bleu / test_pairs.size();
+    accuracy = total_bleu / num_pairs;
 }
 
 // WMT14 Implementation
@@ -132,13 +142,15 @@ void WMT14Benchmark::load_dataset() {
     
     if (!std::filesystem::exists(targz_file)) {
         std::cout << "Downloading WMT14 dataset..." << std::endl;
-        if (!download_file(dataset_url, targz_file)) {
+        if (!utils::download_file(dataset_url, targz_file,
+            [](float p, const std::string& msg) { utils::print_progress(p, "WMT14 Download"); })) {
             std::cerr << "Failed to download WMT14 dataset" << std::endl;
             return;
         }
         
         std::cout << "Extracting WMT14 dataset..." << std::endl;
-        if (!utils::extract_targz(targz_file, dataset_path)) {
+        if (!utils::extract_targz(targz_file, dataset_path,
+            [](float p, const std::string& msg) { utils::print_progress(p, "WMT14 Extract"); })) {
             std::cerr << "Failed to extract WMT14 dataset" << std::endl;
             return;
         }
@@ -157,31 +169,39 @@ void WMT14Benchmark::load_dataset() {
     auto de_lines = utils::read_lines(test_de);
     
     size_t num_samples = std::min(en_lines.size(), de_lines.size());
+    std::cout << "Processing WMT14 test pairs..." << std::endl;
     for (size_t i = 0; i < num_samples; ++i) {
         Matrix input = {utils::tokenize(en_lines[i])};
         Matrix target = {utils::tokenize(de_lines[i])};
         test_pairs.push_back(std::make_pair(input, target));
+        
+        utils::print_progress(static_cast<float>(i + 1) / num_samples, "WMT14 Processing");
     }
     
-    std::cout << "Loaded " << test_pairs.size() << " test pairs" << std::endl;
+    std::cout << "Loaded " << test_pairs.size() << " WMT14 test pairs" << std::endl;
 }
 
 void WMT14Benchmark::run(Transformer& model) {
     float total_bleu = 0.0f;
+    size_t num_pairs = test_pairs.size();
     
-    for (const auto& pair : test_pairs) {
+    std::cout << "\nRunning WMT14 benchmark..." << std::endl;
+    for (size_t i = 0; i < num_pairs; ++i) {
+        const auto& pair = test_pairs[i];
         auto output = model.forward(pair.first);
         
         // Compute BLEU score for this sample
         float bleu = 0.0f;
-        for (size_t i = 0; i < output.size(); ++i) {
-            bleu += compute_bleu_score(output[i], pair.second[i]);
+        for (size_t j = 0; j < output.size(); ++j) {
+            bleu += compute_bleu_score(output[j], pair.second[j]);
         }
         bleu /= output.size();
         total_bleu += bleu;
+        
+        utils::print_progress(static_cast<float>(i + 1) / num_pairs, "WMT14 Evaluation");
     }
     
-    accuracy = total_bleu / test_pairs.size();
+    accuracy = total_bleu / num_pairs;
 }
 
 // GLUE Implementation
@@ -201,18 +221,27 @@ void GLUEBenchmark::load_dataset() {
         {"QQP", "https://dl.fbaipublicfiles.com/glue/data/QQP.zip"}
     };
     
+    size_t total_tasks = tasks.size();
+    size_t current_task = 0;
+    
     for (const auto& [task, url] : tasks) {
         const std::string task_path = dataset_path + task;
         const std::string zip_file = task_path + ".zip";
         
         if (!std::filesystem::exists(zip_file)) {
             std::cout << "Downloading GLUE " << task << " dataset..." << std::endl;
-            if (!download_file(url, zip_file)) {
+            if (!utils::download_file(url, zip_file,
+                [task](float p, const std::string& msg) { utils::print_progress(p, "GLUE " + task + " Download"); })) {
                 std::cerr << "Failed to download " << task << std::endl;
                 continue;
             }
             
-            // TODO: Extract zip file
+            std::cout << "Extracting GLUE " << task << " dataset..." << std::endl;
+            if (!utils::extract_zip(zip_file, task_path,
+                [task](float p, const std::string& msg) { utils::print_progress(p, "GLUE " + task + " Extract"); })) {
+                std::cerr << "Failed to extract " << task << std::endl;
+                continue;
+            }
         }
         
         // Load test data
@@ -223,34 +252,47 @@ void GLUEBenchmark::load_dataset() {
         }
         
         auto lines = utils::read_lines(test_file);
-        for (const auto& line : lines) {
-            Matrix input = {utils::tokenize(line)};
-            Matrix target = {utils::tokenize(line)};  // For demonstration, use same line as target
+        size_t num_lines = lines.size();
+        std::cout << "Processing GLUE " << task << " test samples..." << std::endl;
+        
+        for (size_t i = 0; i < num_lines; ++i) {
+            Matrix input = {utils::tokenize(lines[i])};
+            Matrix target = {utils::tokenize(lines[i])};  // For demonstration, use same line as target
             test_pairs.push_back(std::make_pair(input, target));
+            
+            utils::print_progress(static_cast<float>(i + 1) / num_lines, "GLUE " + task + " Processing");
         }
+        
+        current_task++;
+        std::cout << "Loaded " << num_lines << " samples from " << task 
+                  << " (" << current_task << "/" << total_tasks << " tasks)" << std::endl;
     }
     
-    std::cout << "Loaded " << test_pairs.size() << " GLUE test samples" << std::endl;
+    std::cout << "Loaded " << test_pairs.size() << " total GLUE test samples" << std::endl;
 }
 
 void GLUEBenchmark::run(Transformer& model) {
     float total_accuracy = 0.0f;
+    size_t num_pairs = test_pairs.size();
     
-    for (const auto& pair : test_pairs) {
+    std::cout << "\nRunning GLUE benchmark..." << std::endl;
+    for (size_t i = 0; i < num_pairs; ++i) {
+        const auto& pair = test_pairs[i];
         auto output = model.forward(pair.first);
         
         // For GLUE tasks, we typically use accuracy or F1 score
         float task_score = 0.0f;
-        for (size_t i = 0; i < output.size(); ++i) {
-            // Simplified accuracy computation
-            float match = compute_bleu_score(output[i], pair.second[i]);
+        for (size_t j = 0; j < output.size(); ++j) {
+            float match = compute_bleu_score(output[j], pair.second[j]);
             task_score += match;
         }
         task_score /= output.size();
         total_accuracy += task_score;
+        
+        utils::print_progress(static_cast<float>(i + 1) / num_pairs, "GLUE Evaluation");
     }
     
-    accuracy = total_accuracy / test_pairs.size();
+    accuracy = total_accuracy / num_pairs;
 }
 
 } // namespace benchmark 
