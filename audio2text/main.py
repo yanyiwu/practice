@@ -1,4 +1,5 @@
 import whisper
+from opencc import OpenCC
 
 # 加载模型（可选 tiny, base, small, medium, large）
 model = whisper.load_model("base")
@@ -8,6 +9,8 @@ audio_path = "your_audio.mp3"
 
 # 识别并生成srt字幕
 result = model.transcribe(audio_path, language="zh", task="transcribe", verbose=True)
+
+cc = OpenCC('t2s')  # 繁体转简体
 
 def format_timestamp(seconds: float) -> str:
     hours = int(seconds // 3600)
@@ -22,7 +25,7 @@ def segments_to_srt(segments):
     for i, seg in enumerate(segments, 1):
         start = format_timestamp(seg["start"])
         end = format_timestamp(seg["end"])
-        text = seg["text"].strip()
+        text = cc.convert(seg["text"].strip())  # 转换为简体中文
         srt += f"{i}\n{start} --> {end}\n{text}\n\n"
     return srt
 
