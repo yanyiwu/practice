@@ -20,3 +20,5 @@ node_modules
 db.sqlite3
 venv*
 api_key.txt
+audio2text/your_audio.mp3
+audio2text/output.srt
