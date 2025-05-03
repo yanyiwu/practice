@@ -4,6 +4,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 import json
+import subprocess
 
 
 def download_audio_from_xiaoyuzhou(url, output_filename=None):
@@ -79,6 +80,18 @@ def download_audio_from_xiaoyuzhou(url, output_filename=None):
                 if chunk:
                     f.write(chunk)
     print(f"音频已保存到: {output_path}")
+
+    # 如果是m4a，自动转换为mp3
+    if ext.lower() == ".m4a":
+        mp3_filename = (output_filename if output_filename else os.path.splitext(origin_filename)[0]) + ".mp3"
+        mp3_path = mp3_filename
+        try:
+            subprocess.run([
+                "ffmpeg", "-y", "-i", output_path, "-codec:a", "libmp3lame", "-qscale:a", "2", mp3_path
+            ], check=True)
+            print(f"已自动转换为MP3: {mp3_path}")
+        except Exception as e:
+            print(f"自动转换为MP3失败: {e}")
 
 
 def main():
