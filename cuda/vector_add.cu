@@ -2,9 +2,20 @@
 #include <cuda_runtime.h>
 
 // CUDA kernel for vector addition
+// __global__ indicates this function runs on the GPU and is called from CPU
+// This function will be executed by multiple GPU threads in parallel
 __global__ void vectorAdd(const float *A, const float *B, float *C, int numElements) {
+    // Calculate the global thread index
+    // threadIdx.x: index of thread within its block
+    // blockIdx.x: index of block within the grid
+    // blockDim.x: number of threads per block
+    // This ensures each thread processes a different element
     int i = blockDim.x * blockIdx.x + threadIdx.x;
+    
+    // Make sure we don't process beyond the array bounds
     if (i < numElements) {
+        // Each thread performs one addition operation
+        // This is the actual parallel computation
         C[i] = A[i] + B[i];
     }
 }
