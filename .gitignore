@@ -23,3 +23,10 @@ api_key.txt
 audio2text/your_audio.mp3
 audio2text/output.srt
 audio2text/1
+*.mp3
+*.m4a
+*.mp4
+*.avi
+*.mkv
+*.flv
+*.wmv
