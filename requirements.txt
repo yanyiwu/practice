@@ -59,7 +59,7 @@ tiktoken==0.9.0
 torch==2.7.0
 tqdm==4.67.1
 typing_extensions==4.12.2
-urllib3==2.2.3
+urllib3==2.5.0
 Werkzeug==3.0.6
 wrapt==1.16.0
 zipp==3.21.0
