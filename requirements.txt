@@ -56,7 +56,7 @@ tensorflow==2.17.0
 tensorflow-io-gcs-filesystem==0.37.1
 termcolor==2.4.0
 tiktoken==0.9.0
-torch==2.7.0
+torch==2.8.0
 tqdm==4.67.1
 typing_extensions==4.12.2
 urllib3==2.5.0
