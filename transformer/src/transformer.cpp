@@ -682,3 +682,7 @@ void FeedForward::update_weights(float learning_rate) {
         grad_b2[i] = 0.0f;  // Reset gradient
     }
 } 
+
+
+
+// hi my name is nobody don't add this to your repo :)
