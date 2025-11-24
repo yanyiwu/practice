@@ -30,3 +30,13 @@ audio2text/1
 *.mkv
 *.flv
 *.wmv
+test_keyboard_log.txt
+recordings/keyboard_log_20251124_090914.txt
+recordings/keyboard_log_20251124_091458.txt
+.gitignore
+recordings/keyboard_log_20251124_091839.txt
+winscreen/keyboard_recording_20251124_094720.txt
+winscreen/recordings/keyboard_log_20251124_093845.txt
+winscreen/recordings/keyboard_log_20251124_093604.txt
+winscreen/recordings/keyboard_log_20251124_093042.txt
+winscreen/recordings/keyboard_log_20251124_092905.txt
